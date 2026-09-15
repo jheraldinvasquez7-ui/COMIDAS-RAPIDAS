@@ -167,7 +167,7 @@
             </q-item-section>
           </q-item>
 
-          <!-- 5. Postres -->
+          
           <q-item
             clickable
             v-ripple
