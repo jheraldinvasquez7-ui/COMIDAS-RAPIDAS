@@ -1,231 +1,514 @@
+@import "tailwindcss";
+
 :root {
-  --primary-red: #B21E27;
-  --primary-dark-red: #8E151D;
-  --bg-soft: #FBFBFB;
-  --text-dark: #111111;
-  --text-muted: #555555;
-  --border-light: #EEEEEE;
+  --primary-gold: #F5A623;
+  --primary-gold-hover: #E0921B;
+  --dark-bg: #121212;
+  --dark-surface: #1A1A1A;
+  --dark-card: #222222;
+  --light-bg: #F8F9FA;
+  --card-bg: #FFFFFF;
+  --text-dark: #1A1A1A;
+  --text-muted: #666666;
+  --border-subtle: #E8E8E8;
 }
 
 body {
   font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
   color: var(--text-dark);
-  background-color: var(--bg-soft);
+  background-color: var(--light-bg);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
-
-.app-toolbar { max-width: 1280px; min-height: 76px; margin: 0 auto; padding: 0 24px; }
-.brand-link, .drawer-title { display: flex; align-items: center; gap: 10px; color: #111; text-decoration: none; font-size: 21px; line-height: .9; }
-.brand-link small { display: block; color: var(--primary-red); font: 9px 'Montserrat', sans-serif; letter-spacing: 2px; margin-top: 7px; }
-.brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: #fff; background: var(--primary-red); font: 700 14px 'Montserrat', sans-serif; }
-.desktop-nav { display: flex; align-items: center; gap: 2px; margin-right: 18px; }
-.promo-nav-btn { width: 42px; height: 42px; }
-.mobile-menu, .mobile-drawer { display: none; }
-.side-menu-button {
-  min-height: 42px;
-  border-radius: 8px;
-  font-weight: 700;
-  color: #111 !important;
-}
-.side-menu-button:hover { background: rgba(178, 30, 39, 0.08); }
-.side-drawer { box-shadow: 8px 0 24px rgba(17, 17, 17, 0.12); }
-.side-drawer .q-item { min-height: 48px; border-radius: 8px; margin: 3px 0; }
-.side-drawer .q-item:hover, .side-drawer .q-item.q-router-link--active { background: rgba(178, 30, 39, 0.08); }
-.app-footer { display: flex; justify-content: space-between; gap: 16px; padding: 16px 24px; background: #111; color: #d6d6d6; font: 12px 'Montserrat', sans-serif; }
 
 h1, h2, h3, .font-heading {
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   letter-spacing: 0.5px;
 }
 
-.font-condensed {
-  font-family: 'Oswald', sans-serif;
+.font-script {
+  font-family: 'Brush Script MT', 'Caveat', cursive, sans-serif;
 }
 
-/* App Header */
-.bb-header {
-  background: #ffffff !important;
-  color: #111111 !important;
-  border-bottom: 1px solid #eeeeee;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+/* Header Estilo Dark & Gold */
+.bf-header {
+  background: #121212 !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.bb-nav-btn {
+.bf-nav-btn {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 0.92rem;
-  letter-spacing: 0.2px;
-  color: #222222;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
   transition: all 0.2s ease;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 6px 14px;
 }
 
-.bb-nav-btn:hover, .bb-nav-btn.q-router-link--active {
-  color: var(--primary-red) !important;
-  background: rgba(178, 30, 39, 0.06);
+.bf-nav-btn:hover {
+  color: var(--primary-gold) !important;
+  background: rgba(245, 166, 35, 0.08);
 }
 
-/* Cards & Badges */
-.product-card {
-  border-radius: 16px;
+.bf-nav-btn-active {
+  color: var(--primary-gold) !important;
+}
+
+/* Enlaces de Categorías Rápidas en el Header */
+.bf-header-cat-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.76rem;
+  letter-spacing: 0.4px;
+  color: #CCCCCC;
+  border-radius: 6px;
+  padding: 4px 9px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.bf-header-cat-btn:hover {
+  color: var(--primary-gold) !important;
+  background: rgba(245, 166, 35, 0.1);
+}
+
+.bf-header-cat-btn.active {
+  color: #121212 !important;
+  background-color: var(--primary-gold) !important;
+}
+
+/* Menú a Mano Izquierda (Sidebar Sencillo y Minimalista) */
+.bf-sidebar-item {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #CCCCCC;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  padding: 8px 12px;
+  transition: all 0.18s ease;
+}
+
+.bf-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--primary-gold) !important;
+}
+
+.bf-sidebar-item.active {
+  background: var(--primary-gold) !important;
+  color: #121212 !important;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.bf-sidebar-item.active .q-icon {
+  color: #121212 !important;
+}
+
+.bf-sidebar-item.active .q-badge {
+  background-color: #121212 !important;
+  color: var(--primary-gold) !important;
+}
+
+/* Botones de Estilo Imagen de Referencia */
+.btn-gold {
+  background-color: var(--primary-gold) !important;
+  color: #121212 !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 8px 22px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.btn-gold:hover {
+  background-color: var(--primary-gold-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 166, 35, 0.35);
+}
+
+.btn-dark-outline {
+  border: 1.5px solid #444444 !important;
+  color: #FFFFFF !important;
+  background: transparent !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 8px 20px;
+  letter-spacing: 0.4px;
+  transition: all 0.2s ease;
+}
+
+.btn-dark-outline:hover {
+  border-color: var(--primary-gold) !important;
+  color: var(--primary-gold) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Hero Section Dark */
+.hero-dark {
+  background-color: #121212;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-title {
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.75rem;
+  }
+}
+
+.text-gold {
+  color: var(--primary-gold) !important;
+}
+
+.bg-gold {
+  background-color: var(--primary-gold) !important;
+}
+
+/* Features Strip Dark */
+.features-strip {
+  background-color: #0E0E0E;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Tarjetas de Producto / Favoritos */
+.favorite-card {
+  background: #FFFFFF;
   border: 1px solid #ECECEC;
-  background: #ffffff;
+  border-radius: 14px;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.product-card:hover {
+.favorite-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-  border-color: #E0E0E0;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border-color: #DFDFDF;
 }
 
-.team-card {
-  align-items: center;
-  min-height: 520px;
-  padding: 28px 24px !important;
-}
-
-.team-photo {
-  flex: 0 0 auto;
-  border: 5px solid #fff;
-  box-shadow: 0 8px 22px rgba(17, 17, 17, 0.16) !important;
-}
-
-.team-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.team-role {
-  display: block;
-  width: fit-content;
-  max-width: 92%;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
-  white-space: normal;
-  line-height: 1.3;
-}
-
-.chef-recommended-card {
-  border: 2px solid var(--primary-red) !important;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%) !important;
-  box-shadow: 0 8px 24px rgba(178, 30, 39, 0.12) !important;
+/* Tarjeta Destacada: Recomendación del Chef */
+.chef-recommendation-card {
+  border: 2px solid var(--primary-gold) !important;
+  background: linear-gradient(180deg, #FFFDF8 0%, #FFFFFF 100%) !important;
+  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.16) !important;
   position: relative;
+}
+
+.chef-recommendation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(245, 166, 35, 0.28) !important;
+}
+
+/* Quasar q-img content resets for custom overlays */
+.q-img__content > div.card-badge-row {
+  background: transparent !important;
+  padding: 8px 10px !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  pointer-events: none !important;
+}
+
+/* Insignias de Producto Estilo Píldora Moderno */
+.chef-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #181818;
+  color: var(--primary-gold);
+  border: 1px solid var(--primary-gold);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.tag-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.tag-mas-pedido {
+  background: #D97706;
+}
+
+.tag-nuevo {
+  background: #2563EB;
+}
+
+.tag-picante {
+  background: #DC2626;
+}
+
+.tag-vegetariano {
+  background: #16A34A;
+}
+
+.tag-promo {
+  background: #7C3AED;
+}
+
+.tag-default {
+  background: #4B5563;
 }
 
 .chef-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: var(--primary-red);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  z-index: 2;
-  box-shadow: 0 2px 8px rgba(178, 30, 39, 0.35);
-}
-
-.category-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  font-weight: 700;
+  background: linear-gradient(135deg, #121212 0%, #2A2A2A 100%);
+  color: var(--primary-gold);
+  border: 1px solid var(--primary-gold);
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.72rem;
-  letter-spacing: 0.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
   padding: 4px 10px;
-  border-radius: 999px;
-  z-index: 2;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
-/* Category Banners */
-.category-hero-banner {
-  border-radius: 20px;
+/* Banner Compacto y Elegante de Inicio */
+.inicio-hero-banner {
   position: relative;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  margin-bottom: 32px;
+  height: 160px;
+  min-height: 160px;
+  max-height: 160px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Buttons */
-.btn-red-primary {
-  background-color: var(--primary-red) !important;
-  color: #ffffff !important;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 8px 22px;
-  letter-spacing: 0.4px;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+.inicio-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(14, 14, 14, 0.95) 0%, rgba(20, 20, 20, 0.84) 50%, rgba(0, 0, 0, 0.45) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
 }
 
-.btn-red-primary:hover {
-  background-color: var(--primary-dark-red) !important;
-  transform: translateY(-1px);
+/* Banner Horizontal de Portada para Cada Categoría */
+.cat-hero-banner {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-.btn-red-outline {
-  border: 2px solid var(--primary-red) !important;
-  color: var(--primary-red) !important;
-  background: transparent !important;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 7px 20px;
-  letter-spacing: 0.4px;
-}
-
-.btn-red-outline:hover {
-  background: rgba(178, 30, 39, 0.08) !important;
-}
-
-@media (max-width: 900px) {
-  .desktop-nav { display: none; }
-  .mobile-menu { display: inline-flex; margin-right: 10px; }
-  .mobile-drawer { display: block; }
-  .drawer-title { padding: 24px; }
+.cat-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(14, 14, 14, 0.94) 0%, rgba(18, 18, 18, 0.82) 55%, rgba(0, 0, 0, 0.45) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.5rem;
+  z-index: 2;
 }
 
 @media (max-width: 600px) {
-  .app-toolbar { padding: 0 16px; }
-  .app-footer { flex-direction: column; padding: 16px; }
-  .team-card { min-height: 0; }
-  .team-photo { width: 180px !important; height: 180px !important; }
+  .cat-hero-overlay {
+    padding: 1.5rem;
+    background: linear-gradient(180deg, rgba(14, 14, 14, 0.95) 0%, rgba(18, 18, 18, 0.88) 100%);
+  }
 }
 
-/* Price tag */
-.price-tag {
+/* Botón de WhatsApp */
+.btn-whatsapp {
+  background-color: #25D366 !important;
+  color: #FFFFFF !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 8px 20px;
+  letter-spacing: 0.4px;
+  transition: all 0.2s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: #20BA5A !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+}
+
+/* Tarjetas del Equipo de Trabajo */
+.team-member-card {
+  background: #FFFFFF;
+  border: 1px solid #ECECEC;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.team-member-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.09);
+  border-color: var(--primary-gold);
+}
+
+.product-price {
   font-family: 'Oswald', sans-serif;
-  font-size: 1.45rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: var(--primary-red);
+  color: var(--primary-gold);
 }
 
-/* Scrollbar */
+.btn-add-product {
+  background-color: #121212 !important;
+  color: #FFFFFF !important;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-add-product:hover {
+  background-color: var(--primary-gold) !important;
+  color: #121212 !important;
+  transform: scale(1.06);
+}
+
+/* Sello Redondo Dorado */
+.fresh-seal {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px dashed var(--primary-gold);
+  color: var(--primary-gold);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Banner de Promoción Dividido (Combo + Sobre Nosotros) */
+.mid-banner-combo {
+  background: #141414;
+  color: #FFFFFF;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mid-banner-about {
+  background: var(--primary-gold);
+  color: #121212;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Barra de Pasos de Pedido */
+.order-stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+.order-stepper-item.completed .step-circle {
+  background-color: #16A34A;
+  color: #FFFFFF;
+}
+
+.order-stepper-item.active .step-circle {
+  background-color: var(--primary-gold);
+  color: #121212;
+  box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.25);
+}
+
+.order-stepper-item.pending .step-circle {
+  background-color: #E0E0E0;
+  color: #888888;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+/* Footer Dark */
+.bf-footer {
+  background-color: #0E0E0E;
+  color: #FFFFFF;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-link {
+  color: #888888;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--primary-gold);
+}
+
+/* Estilo de Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #1A1A1A;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4a5a8;
+  background: #333333;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-red);
+  background: var(--primary-gold);
 }
