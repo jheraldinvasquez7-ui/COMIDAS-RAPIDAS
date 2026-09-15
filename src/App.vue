@@ -167,7 +167,7 @@
             </q-item-section>
           </q-item>
 
-          
+          <!-- 5. Postres -->
           <q-item
             clickable
             v-ripple
@@ -1744,7 +1744,7 @@ const CATALOGO_PRODUCTOS = [
     precio: 18500,
     etiqueta: 'Clásico',
     esRecomendacionChef: false,
-    imagen: 'https://i.pinimg.com/736x/69/f2/e7/69f2e79496fe5064eeffe72be6cb24c4.jpg'
+    imagen: 'https://images.unsplash.com/photo-1612528443702-f6741f70a049?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'bf-dog3',
@@ -1756,7 +1756,7 @@ const CATALOGO_PRODUCTOS = [
     precio: 23500,
     etiqueta: 'Gratinado',
     esRecomendacionChef: false,
-    imagen: 'https://i.pinimg.com/736x/22/35/74/223574f96c5c18c3646763c897cd1e46.jpg'
+    imagen: 'https://images.unsplash.com/photo-1541214113241-21578d2d9b62?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'bf-dog4',
@@ -1768,7 +1768,7 @@ const CATALOGO_PRODUCTOS = [
     precio: 24000,
     etiqueta: 'Picante',
     esRecomendacionChef: false,
-    imagen: 'https://i.pinimg.com/1200x/94/d1/61/94d1617f3f012bc6a19634f4f05d7c32.jpg'
+    imagen: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'bf-dog5',
@@ -2008,7 +2008,7 @@ const CATALOGO_PRODUCTOS = [
     precio: 48000,
     etiqueta: 'Especial',
     esRecomendacionChef: false,
-    imagen: 'https://i.pinimg.com/1200x/50/9d/b4/509db4af6ed5983cac2d0f72ed41248a.jpg'
+    imagen: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'bf-promo4',
@@ -2032,7 +2032,7 @@ const CATALOGO_PRODUCTOS = [
     precio: 28500,
     etiqueta: 'Nuevo',
     esRecomendacionChef: false,
-    imagen: 'https://i.pinimg.com/736x/d9/d5/72/d9d572b1240200dc730621f434f0b32e.jpg'
+    imagen: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80'
   }
 ]
 
@@ -2067,7 +2067,7 @@ const EQUIPO_TRABAJO = [
     nombre: 'Camila Ortiz',
     cargo: 'Chef Repostera & Pizzería Artesanal',
     experiencia: '7 años especialista en masa madre y chocolatería de autor.',
-    foto: 'https://i.pinimg.com/1200x/f9/0b/06/f90b06b9413dfc59bfd613fcbef1e79e.jpg',
+    foto: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=400&q=80',
     descripcion: 'Diseñadora de las masas de pizza fermentadas 48h y los volcanes de chocolate fondant.'
   }
 ]
@@ -2470,6 +2470,7 @@ function guardarCalificacion(orden) {
   })
 }
 </script>
+
 <style>
 @import "tailwindcss";
 
