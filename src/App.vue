@@ -256,46 +256,94 @@
     <q-page-container>
       <!-- 0. VISTA: INICIO (HOME CON HERO, MENÚ DIGITAL DE CATEGORÍAS Y REDIRECCIÓN) -->
       <div v-if="seccionActiva === 'inicio'" class="q-pa-md q-pa-md-xl max-w-7xl mx-auto">
-        <!-- BANNER DE BIENVENIDA COMPACTO Y ELEGANTE DE INICIO -->
-        <div class="inicio-hero-banner q-mb-lg">
-          <q-img
-            src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80"
-            class="full-width full-height"
-            style="height: 160px;"
-          />
-          <div class="inicio-hero-overlay">
-            <div>
-              <div class="row items-center q-gutter-x-xs text-gold q-mb-xs">
-                <q-icon name="local_fire_department" size="16px" />
-                <span class="text-caption text-weight-bolder text-uppercase" style="letter-spacing: 1px;">
-                  Parrilla Artesanal desde 2016
-                </span>
+        <!-- HERO BANNER: BUENA COMIDA RÁPIDA & FRESCA (ESPAÑOL) -->
+        <div class="fast-fresh-hero q-mb-xl">
+          <div class="fast-fresh-splash-bg gt-xs"></div>
+          
+          <div class="row items-center q-col-gutter-lg q-pa-md q-pa-md-xl">
+            <!-- COLUMNA IZQUIERDA: TEXTOS, BOTONES Y CARACTERÍSTICAS -->
+            <div class="col-12 col-md-7 z-top">
+              <!-- Tagline script en dorado -->
+              <div class="hero-cravings">
+                Antojos Satisfechos
               </div>
-              <h1 class="text-h5 text-md-h4 text-weight-bolder text-white font-heading q-my-none">
-                BURGER <span class="text-gold">FACTORY</span>
-              </h1>
-              <p class="text-grey-4 text-caption q-mt-xs q-mb-none gt-xs" style="max-width: 520px; line-height: 1.3;">
-                Cortes selectos Angus a la brasa, pan brioche recién horneado y recetas exclusivas.
+
+              <!-- Título principal en tipografía Bebas Neue -->
+              <div class="hero-main-title">
+                <span class="text-white">BUENA COMIDA</span>
+                <br />
+                <span class="text-gold">RÁPIDA & FRESCA</span>
+              </div>
+
+              <!-- Descripción en español -->
+              <p class="text-grey-4 text-body2 text-md-body1 q-mb-lg" style="max-width: 480px; line-height: 1.5;">
+                Deliciosa comida rápida preparada con ingredientes de primera calidad, servida caliente y fresca para satisfacer tus antojos.
               </p>
+
+              <!-- Botón de Acción: PEDIR AHORA -->
+              <div class="row items-center q-gutter-md q-mb-lg">
+                <q-btn
+                  unelevated
+                  class="hero-order-btn"
+                  @click="cambiarSeccion('hamburguesas')"
+                >
+                  <span>PEDIR AHORA</span>
+                  <q-icon name="arrow_forward" size="18px" class="q-ml-sm" />
+                </q-btn>
+              </div>
+
+              <!-- Tres características inferiores en español -->
+              <div class="row items-center q-gutter-md q-pt-md border-top-dark">
+                <!-- 1. Domicilio Rápido -->
+                <div class="hero-feature-item">
+                  <q-icon name="moped" class="hero-feature-icon" />
+                  <div>
+                    <div class="hero-feature-title">DOMICILIO RÁPIDO</div>
+                    <div class="hero-feature-desc">A Tu Puerta</div>
+                  </div>
+                </div>
+
+                <q-separator vertical dark inset class="gt-xs opacity-20" />
+
+                <!-- 2. Máxima Calidad -->
+                <div class="hero-feature-item">
+                  <q-icon name="verified" class="hero-feature-icon" />
+                  <div>
+                    <div class="hero-feature-title">MÁXIMA CALIDAD</div>
+                    <div class="hero-feature-desc">Ingredientes Frescos</div>
+                  </div>
+                </div>
+
+                <q-separator vertical dark inset class="gt-xs opacity-20" />
+
+                <!-- 3. Grandes Ofertas -->
+                <div class="hero-feature-item">
+                  <q-icon name="local_offer" class="hero-feature-icon" />
+                  <div>
+                    <div class="hero-feature-title">GRANDES OFERTAS</div>
+                    <div class="hero-feature-desc">En Cada Pedido</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="row items-center q-gutter-xs">
-              <q-btn
-                unelevated
-                dense
-                class="btn-gold q-px-md text-weight-bolder"
-                icon="restaurant_menu"
-                label="Ver Menú"
-                @click="cambiarSeccion('hamburguesas')"
-              />
-              <q-btn
-                outline
-                dense
-                class="text-white border-subtle q-px-sm text-weight-bold"
-                icon="groups"
-                label="Nosotros"
-                @click="cambiarSeccion('nosotros')"
-              />
+            <!-- COLUMNA DERECHA: COMBO FOTO CON SELLO 100% CARNE FRESCA -->
+            <div class="col-12 col-md-5 relative-position text-center">
+              <div class="relative-position inline-block full-width" style="max-width: 480px;">
+                <img
+                  :src="heroComboImg"
+                  alt="Buena Comida Rápida y Fresca - Combo Burger Factory"
+                  class="full-width rounded-borders shadow-3"
+                  style="object-fit: cover; max-height: 350px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);"
+                />
+
+                <!-- Sello Circular Dorado: 100% CARNE FRESCA -->
+                <div class="fresh-seal-gold">
+                  <span class="seal-number">100%</span>
+                  <span class="seal-word-1">CARNE</span>
+                  <span class="seal-word-2">FRESCA</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -572,6 +620,7 @@
                   <q-img
                     :src="producto.imagen"
                     :ratio="16/10"
+                    spinner-color="amber-8"
                   >
                     <div class="card-badge-row">
                       <!-- Insignia RECOMENDACIÓN DEL CHEF destacada -->
@@ -1113,6 +1162,7 @@
         <q-img
           :src="productoSeleccionado.imagen"
           :ratio="16/9"
+          spinner-color="amber-8"
         >
           <div class="absolute-top-right q-ma-sm">
             <q-btn round dense flat icon="close" color="white" v-close-popup />
@@ -1545,22 +1595,520 @@
 </template>
 
 <script setup>
-// Únicamente ref() según requerimiento estricto (PROHIBIDO: computed, watch, Pinia, Vue Router)
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 // Persistencia únicamente con useLocalStorage de @vueuse/core
 import { useLocalStorage } from '@vueuse/core'
 import { useQuasar } from 'quasar'
 
-// Importación de datos estáticos
-import {
-  CATEGORIAS_CONFIG,
-  CATALOGO_PRODUCTOS,
-  EQUIPO_TRABAJO,
-  SEDES_RESTAURANTE,
-  CONTACTO_GENERAL
-} from './data.js'
+const heroComboImg = 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=1000&q=80'
+
+// CONFIGURACIÓN DE CATEGORÍAS
+const CATEGORIAS_CONFIG = {
+  hamburguesas: {
+    id: 'hamburguesas',
+    nombre: 'Sección de Hamburguesas',
+    tituloHero: 'HAMBURGUESAS ARTESANALES',
+    subtitulo: 'A la Parrilla de Carbón',
+    descripcion: 'Medallones de res 100% Angus molida a diario, asados al carbón con queso cheddar derretido, pan brioche tostado a la mantequilla y tocineta crujiente.',
+    banner: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1600&q=80'
+  },
+  perros: {
+    id: 'perros',
+    nombre: 'Sección de Perros Calientes',
+    tituloHero: 'PERROS CALIENTES SALVAJES',
+    subtitulo: 'Sabor Callejero Gourmet',
+    descripcion: 'Salchichas premium de 22cm estilo Frankfurt y Suiza, gratinadas con queso mozzarella al horno, tocineta crocante, salsas caseras y ripio dorado.',
+    banner: 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=1600&q=80'
+  },
+  pizzas: {
+    id: 'pizzas',
+    nombre: 'Sección de Pizzas',
+    tituloHero: 'PIZZAS A LA PIEDRA',
+    subtitulo: 'Masa Madre Fermentada 48 Horas',
+    descripcion: 'Base crocante horneada a alta temperatura con salsa de tomates San Marzano, queso mozzarella hilado de alta humedad y cortes selectos de carnes.',
+    banner: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1600&q=80'
+  },
+  bebidas: {
+    id: 'bebidas',
+    nombre: 'Sección de Bebidas',
+    tituloHero: 'BEBIDAS Y MALTEADAS ARTESANALES',
+    subtitulo: '100% Refrescantes y Cremosas',
+    descripcion: 'Malteadas preparadas con helado artesanal espeso, sodas saborizadas con almíbares de fruta natural, limonadas de coco y cervezas heladas.',
+    banner: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=1600&q=80'
+  },
+  postres: {
+    id: 'postres',
+    nombre: 'Sección de Postres',
+    tituloHero: 'POSTRES Y DULCES CASEROS',
+    subtitulo: 'El Cierre Perfecto para tu Pedido',
+    descripcion: 'Recetas dulces horneadas al día: volcanes de chocolate fundente, cheesecakes neoyorquinos con frutos rojos, waffles tibios y brownies melcochudos.',
+    banner: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=1600&q=80'
+  },
+  promociones: {
+    id: 'promociones',
+    nombre: 'Sección de Promociones y Combos',
+    tituloHero: 'COMBOS Y SUPER PROMOCIONES',
+    subtitulo: 'Más Sabor al Mejor Precio',
+    descripcion: 'Combos diseñados para compartir con amigos o en pareja. Incluyen hamburguesas, pizzas, perros calientes, papas crocantes y bebidas frías.',
+    banner: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=1600&q=80'
+  }
+}
+
+// CATÁLOGO DE PRODUCTOS (30 PRODUCTOS CON FOTOS REALES DE INTERNET)
+const CATALOGO_PRODUCTOS = [
+  // --- 5 HAMBURGUESAS ---
+  {
+    id: 'bf-h1',
+    categoriaId: 'hamburguesas',
+    categoria: 'Hamburguesas',
+    nombre: 'Classic Cheeseburger',
+    descripcion: 'Carne Angus jugosa con queso cheddar fundido, lechuga romana, tomate fresco, cebolla roja y salsa especial de la casa.',
+    ingredientes: 'Carne 100% Angus 180g, pan brioche artesanal tostado con mantequilla, queso cheddar, pepinillos dulces y aderezo especial.',
+    precio: 24900,
+    etiqueta: 'Más Pedido',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-h2',
+    categoriaId: 'hamburguesas',
+    categoria: 'Hamburguesas',
+    nombre: 'Monster Doble Carne Angus',
+    descripcion: 'Doble medallón Angus (360g), cuatro lonchas de queso cheddar derretido, abundante tocineta crocante y salsa tártara de ajo.',
+    ingredientes: '360g de res Angus a la brasa, queso cheddar americano, tocineta ahumada crujiente, cebolla caramelizada y salsa tártara.',
+    precio: 34900,
+    etiqueta: 'Gigante',
+    esRecomendacionChef: true,
+    motivoChef: 'El corte estrella del chef: doble carne Angus sellada a fuego vivo con toque ahumado.',
+    imagen: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-h3',
+    categoriaId: 'hamburguesas',
+    categoria: 'Hamburguesas',
+    nombre: 'BBQ Bacon Burger',
+    descripcion: 'Tiras de tocineta ahumada crujiente, queso cheddar, aros de cebolla crocantes y bañada en salsa barbacoa ahumada.',
+    ingredientes: 'Carne Angus 200g, tocineta premium, aros de cebolla empanizados, queso americano y salsa BBQ de la casa.',
+    precio: 27900,
+    etiqueta: 'Nuevo',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-h4',
+    categoriaId: 'hamburguesas',
+    categoria: 'Hamburguesas',
+    nombre: 'Spicy Jalapeño Burger',
+    descripcion: 'Rodajas de jalapeño encurtido salteado, mayonesa spicy chipotle, queso derretido y lechuga crujiente.',
+    ingredientes: 'Carne de res parrillera 180g, jalapeños al wok, salsa chipotle picante, queso mozzarella gratinado y vegetales.',
+    precio: 25900,
+    etiqueta: 'Picante',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-h5',
+    categoriaId: 'hamburguesas',
+    categoria: 'Hamburguesas',
+    nombre: 'Avocado Ranch Burger',
+    descripcion: 'Láminas cremosas de aguacate hass fresco, queso pepper jack fundido, tomate en rodajas y aderezo ranch de finas hierbas.',
+    ingredientes: 'Carne Angus 180g, aguacate hass de temporada, queso pepper jack, lechuga verde y aderezo ranch.',
+    precio: 26900,
+    etiqueta: 'Vegetariano Opcional',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1520072959219-c595dc870360?auto=format&fit=crop&w=600&q=80'
+  },
+
+  // --- 5 PERROS CALIENTES ---
+  {
+    id: 'bf-dog1',
+    categoriaId: 'perros',
+    categoria: 'Perros Calientes',
+    nombre: 'Perro Caliente Salvaje',
+    descripcion: 'Salchicha suiza parrillera de 22cm envuelta en tocineta crocante, gratinado al horno con doble mozzarella y ripio de papa.',
+    ingredientes: 'Salchicha suiza 22cm, queso mozzarella hilado al horno, tocineta dorada, ripio de papa y salsas tártara y piña casera.',
+    precio: 22000,
+    etiqueta: 'Más Pedido',
+    esRecomendacionChef: true,
+    motivoChef: 'Receta insignia: salchicha suiza parrillera con costra de mozzarella fundido al soplete.',
+    imagen: 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-dog2',
+    categoriaId: 'perros',
+    categoria: 'Perros Calientes',
+    nombre: 'Perro Americano Clásico',
+    descripcion: 'Salchicha tipo Frankfurt ahumada al vapor en pan brioche con semillas de amapola, relish dulce de pepinillos y mostaza.',
+    ingredientes: 'Salchicha Frankfurt ahumada, pan tierno, relish dulce de pepinillo, cebolla blanca en brunoise y mostaza Dijon.',
+    precio: 18500,
+    etiqueta: 'Clásico',
+    esRecomendacionChef: false,
+    imagen: 'https://i.pinimg.com/736x/69/f2/e7/69f2e79496fe5064eeffe72be6cb24c4.jpg'
+  },
+  {
+    id: 'bf-dog3',
+    categoriaId: 'perros',
+    categoria: 'Perros Calientes',
+    nombre: 'Perro Suizo Gratinado',
+    descripcion: 'Salchicha suiza jumbo bañada con crema tibia de queso cheddar artesanal, maíz dulce tierno y tocineta picada.',
+    ingredientes: 'Salchicha suiza a la plancha, salsa espesa de cheddar madurado, tocineta crujiente y maíz tierno salteado.',
+    precio: 23500,
+    etiqueta: 'Gratinado',
+    esRecomendacionChef: false,
+    imagen: 'https://i.pinimg.com/736x/22/35/74/223574f96c5c18c3646763c897cd1e46.jpg'
+  },
+  {
+    id: 'bf-dog4',
+    categoriaId: 'perros',
+    categoria: 'Perros Calientes',
+    nombre: 'Perro Tex-Mex con Chili',
+    descripcion: 'Carne con chili especiado al estilo texano, queso fundido, rodajas de jalapeño y nachos triturados crocantes.',
+    ingredientes: 'Salchicha parrillera, chili con carne Angus, queso cheddar líquido, totopos artesanales y jalapeños en rodajas.',
+    precio: 24000,
+    etiqueta: 'Picante',
+    esRecomendacionChef: false,
+    imagen: 'https://i.pinimg.com/1200x/94/d1/61/94d1617f3f012bc6a19634f4f05d7c32.jpg'
+  },
+  {
+    id: 'bf-dog5',
+    categoriaId: 'perros',
+    categoria: 'Perros Calientes',
+    nombre: 'Perro Hawaiano con Piña Asada',
+    descripcion: 'Salchicha premium combinada con mermelada artesanal de piña caramelizada al wok, tocineta y queso derretido.',
+    ingredientes: 'Salchicha premium, reducción de piña miel natural con canela, tocineta ahumada y queso campesino fundido.',
+    precio: 21000,
+    etiqueta: 'Nuevo',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1599599810694-b5b37304c041?auto=format&fit=crop&w=600&q=80'
+  },
+
+  // --- 5 PIZZAS ---
+  {
+    id: 'bf-piz1',
+    categoriaId: 'pizzas',
+    categoria: 'Pizzas',
+    nombre: 'Pizza Suprema Carnes',
+    descripcion: 'Masa madre a la piedra con pomodoro italiano, abundante mozzarella, pepperoni curado, tocineta y carne Angus molida.',
+    ingredientes: 'Masa fermentada 48h, salsa pomodoro San Marzano, queso mozzarella hilado, pepperoni crocante, tocineta y orégano.',
+    precio: 36000,
+    etiqueta: 'Más Pedido',
+    esRecomendacionChef: true,
+    motivoChef: 'El horneado perfecto a 400°C: borde inflado crujiente con triple selección de carnes curadas.',
+    imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-piz2',
+    categoriaId: 'pizzas',
+    categoria: 'Pizzas',
+    nombre: 'Pizza Margarita Clásica',
+    descripcion: 'Tradición napolitana con mozzarella di búfala fresca, hojas de albahaca recién cortadas y aceite de oliva virgen extra.',
+    ingredientes: 'Base delgada artesanal, pomodoro fresco, mozzarella di búfala, hojas de albahaca y aceite de oliva virgen extra.',
+    precio: 29900,
+    etiqueta: 'Vegetariano',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-piz3',
+    categoriaId: 'pizzas',
+    categoria: 'Pizzas',
+    nombre: 'Pizza Pepperoni Doble Queso',
+    descripcion: 'Doble porción de mozzarella derretido con abundante pepperoni crujiente tostado en el horno a la leña.',
+    ingredientes: 'Masa crocante, salsa casera de tomate, doble capa de queso mozzarella y rodajas de pepperoni curado.',
+    precio: 33500,
+    etiqueta: 'Favorito',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-piz4',
+    categoriaId: 'pizzas',
+    categoria: 'Pizzas',
+    nombre: 'Pizza Cuatro Quesos Artesanal',
+    descripcion: 'Fusión suave y balanceada de quesos mozzarella, gorgonzola cremoso, parmesano reggiano y provolone ahumado.',
+    ingredientes: 'Masa madre, salsa pomodoro ligera, cuarteto de quesos madurados seleccionados y orégano seco silvestre.',
+    precio: 34900,
+    etiqueta: 'Gourmet',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1573821663912-569905455b1c?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-piz5',
+    categoriaId: 'pizzas',
+    categoria: 'Pizzas',
+    nombre: 'Pizza BBQ Pollo Ahumado',
+    descripcion: 'Pechuga de pollo desmechada y salteada con salsa barbacoa ahumada, cebolla morada en plumas y queso fundido.',
+    ingredientes: 'Pollo marinado a la barbacoa, queso mozzarella derretido, cebolla roja caramelizada y toque de cilantro fresco.',
+    precio: 35000,
+    etiqueta: 'Nuevo',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80'
+  },
+
+  // --- 5 BEBIDAS ---
+  {
+    id: 'bf-b1',
+    categoriaId: 'bebidas',
+    categoria: 'Bebidas',
+    nombre: 'Malteada Belga de Chocolate',
+    descripcion: 'Helado espeso de chocolate belga artesanal, crema chantilly montada al instante y virutas de chocolate negro 70%.',
+    ingredientes: 'Helado artesanal de cacao puro, leche entera fresca, sirope de fudge de chocolate y crema chantilly.',
+    precio: 13500,
+    etiqueta: 'Más Pedido',
+    esRecomendacionChef: true,
+    motivoChef: 'Elaborada con auténtico chocolate belga y servida con textura cremosa ultra densa.',
+    imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-b2',
+    categoriaId: 'bebidas',
+    categoria: 'Bebidas',
+    nombre: 'Soda Frutos Rojos y Menta',
+    descripcion: 'Soda gasificada artesanal con infusión de moras, frambuesas y arándanos frescos macerados con hierbabuena.',
+    ingredientes: 'Agua con gas, coulis casero de frutos rojos silvestres, hojas frescas de hierbabuena y hielo frappé.',
+    precio: 9500,
+    etiqueta: 'Refrescante',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-b3',
+    categoriaId: 'bebidas',
+    categoria: 'Bebidas',
+    nombre: 'Limonada de Coco Cremosa',
+    descripcion: 'Zumo de limón tahití recién exprimido batido con leche y crema de coco natural, servida escarchada.',
+    ingredientes: 'Limón fresco natural, crema de coco espesa, leche condensada y hielo frappé batido al punto de nieve.',
+    precio: 10900,
+    etiqueta: 'Nuevo',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-b4',
+    categoriaId: 'bebidas',
+    categoria: 'Bebidas',
+    nombre: 'Malteada Fresa Silvestre',
+    descripcion: 'Helado cremoso de vainilla batido con pulpa concentrada de fresas campesinas y sirope dulce de la casa.',
+    ingredientes: 'Helado de vainilla francesa, fresas naturales reducidas en almíbar, leche fresca y copete de chantilly.',
+    precio: 12900,
+    etiqueta: 'Favorito',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-b5',
+    categoriaId: 'bebidas',
+    categoria: 'Bebidas',
+    nombre: 'Cerveza Artesanal Golden Ale',
+    descripcion: 'Cerveza rubia colombiana bien helada con notas cítricas suaves, lúpulo aromático y cuerpo refrescante.',
+    ingredientes: 'Agua de manantial, malta de cebada dos hileras, lúpulo cascade aromático y levadura ale.',
+    precio: 11900,
+    etiqueta: 'Fría',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=600&q=80'
+  },
+
+  // --- 5 POSTRES ---
+  {
+    id: 'bf-pos1',
+    categoriaId: 'postres',
+    categoria: 'Postres',
+    nombre: 'Volcán Fondant de Chocolate',
+    descripcion: 'Bizcocho tibio horneado de chocolate oscuro con centro líquido derretido, acompañado de helado de vainilla.',
+    ingredientes: 'Cacao fino al 70%, centro líquido de chocolate semiamargo derretido y bola de helado de vainilla francesa.',
+    precio: 14500,
+    etiqueta: 'Más Pedido',
+    esRecomendacionChef: true,
+    motivoChef: 'El contraste perfecto: bizcocho tibio con corazón fluyente y helado artesanal bien frío.',
+    imagen: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-pos2',
+    categoriaId: 'postres',
+    categoria: 'Postres',
+    nombre: 'Cheesecake Frutos del Bosque',
+    descripcion: 'Tarta cremosa de queso estilo Nueva York con base crujiente de galleta graham y coulis de frutos rojos.',
+    ingredientes: 'Queso crema horneado, base de mantequilla y galleta tostada, glaseado de mora, arándano y fresa.',
+    precio: 13900,
+    etiqueta: 'Nuevo',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-pos3',
+    categoriaId: 'postres',
+    categoria: 'Postres',
+    nombre: 'Waffle Nutella y Fresas',
+    descripcion: 'Waffle belga recién salido de la plancha cubierto con abundante Nutella tibia, fresas en rodajas y azúcar glass.',
+    ingredientes: 'Masa de waffle belga caramelizada, crema de avellanas Nutella, fresas frescas y lluvia de azúcar nevada.',
+    precio: 15000,
+    etiqueta: 'Favorito',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-pos4',
+    categoriaId: 'postres',
+    categoria: 'Postres',
+    nombre: 'Brownie Melcochudo con Helado',
+    descripcion: 'Brownie artesanal con nueces tostadas, textura húmeda melcochuda servido caliente con helado y arequipe.',
+    ingredientes: 'Chocolate amargo, nueces del nogal, mantequilla clarificada, helado de vainilla y salsa de dulce de leche.',
+    precio: 12500,
+    etiqueta: 'Clásico',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1607920591413-4ec007e70023?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-pos5',
+    categoriaId: 'postres',
+    categoria: 'Postres',
+    nombre: 'Tiramisú Tradicional de Café',
+    descripcion: 'Postre italiano con capas de bizcocho soletilla embebidas en café espresso colombiano y crema suave mascarpone.',
+    ingredientes: 'Café colombiano 100% arábica espresso, queso mascarpone batido con huevos de campo y cacao puro espolvoreado.',
+    precio: 14000,
+    etiqueta: 'Gourmet',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=600&q=80'
+  },
+
+  // --- PROMOCIONES Y COMBOS ---
+  {
+    id: 'bf-promo1',
+    categoriaId: 'promociones',
+    categoria: 'Promociones',
+    nombre: 'Combo Pareja Burger & Fries',
+    descripcion: '2 Classic Cheeseburgers Angus + 2 porciones de papas doradas artesanales con paprika + 2 sodas de fruta.',
+    ingredientes: '2 carnes Angus 180g en pan brioche, 2 raciones generosas de papas francesas y 2 bebidas refrescantes a elección.',
+    precio: 49900,
+    etiqueta: 'Más Pedido',
+    esRecomendacionChef: true,
+    motivoChef: 'El combo favorito de la casa con 20% de ahorro directo para compartir de a dos.',
+    imagen: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-promo2',
+    categoriaId: 'promociones',
+    categoria: 'Promociones',
+    nombre: 'Combo Familiar Pizza Fest',
+    descripcion: '1 Pizza Suprema Carnes Familiar (8 porciones) + 1 porción de Waffle Nutella con Fresas + 1 Bebida 1.5L.',
+    ingredientes: 'Pizza a la piedra tamaño familiar con 3 carnes, waffle belga dulce para postre y gaseosa familiar 1.5 litros.',
+    precio: 52000,
+    etiqueta: 'Familiar',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-promo3',
+    categoriaId: 'promociones',
+    categoria: 'Promociones',
+    nombre: 'Combo Perro Salvaje Explosivo',
+    descripcion: '2 Perros Calientes Salvajes con doble queso y tocineta + 2 Cervezas Artesanales Golden Ale bien frías.',
+    ingredientes: '2 salchichas suizas de 22cm gratinadas al soplete con ripio de papa y 2 botellas de cerveza artesanal rubia.',
+    precio: 48000,
+    etiqueta: 'Especial',
+    esRecomendacionChef: false,
+    imagen: 'https://i.pinimg.com/1200x/50/9d/b4/509db4af6ed5983cac2d0f72ed41248a.jpg'
+  },
+  {
+    id: 'bf-promo4',
+    categoriaId: 'promociones',
+    categoria: 'Promociones',
+    nombre: 'Combo Parrillero Monster',
+    descripcion: '1 Monster Doble Carne Angus (360g) + 1 porción de papas rústicas con tocineta y cheddar + 1 Malteada Belga.',
+    ingredientes: 'Hamburguesa doble res parrillera, papas con queso fundido y malteada artesanal de chocolate belga.',
+    precio: 44900,
+    etiqueta: 'Gigante',
+    esRecomendacionChef: false,
+    imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'bf-promo5',
+    categoriaId: 'promociones',
+    categoria: 'Promociones',
+    nombre: 'Combo Dulce Tentación',
+    descripcion: '2 Volcanes Fondant de Chocolate tibios con helado de vainilla + 2 cafés espressos colombianos.',
+    ingredientes: 'Dos postres de volcán líquido con helado francés y café de origen tostado medio para acompañar.',
+    precio: 28500,
+    etiqueta: 'Nuevo',
+    esRecomendacionChef: false,
+    imagen: 'https://i.pinimg.com/736x/d9/d5/72/d9d572b1240200dc730621f434f0b32e.jpg'
+  }
+]
+
+// EQUIPO DE TRABAJO
+const EQUIPO_TRABAJO = [
+  {
+    id: 'eq-chef',
+    nombre: 'Mateo Morales',
+    cargo: 'Chef Ejecutivo & Maestro Parrillero',
+    experiencia: '12 años dominando la brasa al carbón y molienda de res Angus.',
+    foto: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=400&q=80',
+    descripcion: 'Encargado de la selección de cortes, temperaturas del carbón y formulación de las salsas de la casa.'
+  },
+  {
+    id: 'eq-caja',
+    nombre: 'Valentina Rincón',
+    cargo: 'Coordinadora de Cajas & Servicio al Cliente',
+    experiencia: '6 años garantizando atención ágil y pedidos sin esperas.',
+    foto: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+    descripcion: 'Asegura la recepción precisa de cada orden digital y una cálida atención en todas nuestras sedes.'
+  },
+  {
+    id: 'eq-domi',
+    nombre: 'Carlos Gómez',
+    cargo: 'Líder de Domicilios & Logística Express',
+    experiencia: '8 años liderando rutas rápidas con empaques térmicos sellados.',
+    foto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    descripcion: 'Su misión es que tu comida llegue crujiente, bien caliente y en tiempo récord directo a tu puerta.'
+  },
+  {
+    id: 'eq-repostera',
+    nombre: 'Camila Ortiz',
+    cargo: 'Chef Repostera & Pizzería Artesanal',
+    experiencia: '7 años especialista en masa madre y chocolatería de autor.',
+    foto: 'https://i.pinimg.com/1200x/f9/0b/06/f90b06b9413dfc59bfd613fcbef1e79e.jpg',
+    descripcion: 'Diseñadora de las masas de pizza fermentadas 48h y los volcanes de chocolate fondant.'
+  }
+]
+
+// SEDES DEL RESTAURANTE
+const SEDES_RESTAURANTE = [
+  {
+    nombre: 'Sede Zona Rosa',
+    direccion: 'Calle 85 # 14-25, Bogotá',
+    telefono: '(601) 745-9820',
+    whatsapp: '+57 312 456 7890',
+    horarios: 'Domingo a Jueves: 11:30 AM - 10:30 PM | Viernes y Sábados: 11:30 AM - 12:00 AM'
+  },
+  {
+    nombre: 'Sede Usaquén Parque',
+    direccion: 'Carrera 6 # 119-18, Bogotá',
+    telefono: '(601) 745-9821',
+    whatsapp: '+57 312 456 7890',
+    horarios: 'Domingo a Jueves: 12:00 PM - 10:00 PM | Viernes y Sábados: 12:00 PM - 11:30 PM'
+  },
+  {
+    nombre: 'Sede Salitre Plaza',
+    direccion: 'Avenida La Esperanza # 68-30, Bogotá',
+    telefono: '(601) 745-9822',
+    whatsapp: '+57 312 456 7890',
+    horarios: 'Lunes a Domingo: 11:30 AM - 10:00 PM (Jornada Continua)'
+  }
+]
+
+// CONTACTO GENERAL
+const CONTACTO_GENERAL = {
+  telefono: '(601) 745-9820',
+  celular: '312 456 7890',
+  whatsapp: '+57 312 456 7890',
+  whatsappUrl: 'https://wa.me/573124567890?text=Hola%20Burger%20Factory,%20quiero%20hacer%20un%20pedido%20del%20men%C3%BA%20digital',
+  email: 'pedidos@burgerfactory.com.co'
+}
 
 const $q = useQuasar()
+const router = useRouter()
+const route = useRoute()
 
 // Persistencia de datos con useLocalStorage
 const carrito = useLocalStorage('bf_carrito_persisted', [])
@@ -1617,12 +2165,35 @@ const erroresFormulario = ref({
   ciudad: false
 })
 
-// Funciones normales
+// Sincronización con Vue Router
 function cambiarSeccion(seccion) {
   seccionActiva.value = seccion
   drawerLeft.value = false // El menú se cierra automáticamente al hacer clic en cualquier sección
   window.scrollTo({ top: 0, behavior: 'smooth' })
+  if (router && route && route.path !== '/' + seccion) {
+    router.push('/' + seccion).catch(() => {})
+  }
 }
+
+// Sincronización al montar o cuando la ruta cambia (ej. botón Atrás / Adelante del navegador)
+onMounted(() => {
+  if (route && route.path && route.path !== '/') {
+    const seccionDesdeRuta = route.path.replace('/', '')
+    if (['inicio', 'hamburguesas', 'perros', 'pizzas', 'bebidas', 'postres', 'promociones', 'nosotros', 'pedidos'].includes(seccionDesdeRuta)) {
+      seccionActiva.value = seccionDesdeRuta
+    }
+  }
+
+  if (router) {
+    router.afterEach((to) => {
+      const seccionDestino = to.path.replace('/', '')
+      if (['inicio', 'hamburguesas', 'perros', 'pizzas', 'bebidas', 'postres', 'promociones', 'nosotros', 'pedidos'].includes(seccionDestino)) {
+        seccionActiva.value = seccionDestino
+        drawerLeft.value = false
+      }
+    })
+  }
+})
 
 function esCategoriaActiva(seccion) {
   return ['hamburguesas', 'perros', 'pizzas', 'bebidas', 'postres', 'promociones'].includes(seccion)
@@ -1899,3 +2470,623 @@ function guardarCalificacion(orden) {
   })
 }
 </script>
+<style>
+@import "tailwindcss";
+
+:root {
+  --primary-gold: #F5A623;
+  --primary-gold-hover: #E0921B;
+  --dark-bg: #121212;
+  --dark-surface: #1A1A1A;
+  --dark-card: #222222;
+  --light-bg: #F8F9FA;
+  --card-bg: #FFFFFF;
+  --text-dark: #1A1A1A;
+  --text-muted: #666666;
+  --border-subtle: #E8E8E8;
+}
+
+body {
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+  color: var(--text-dark);
+  background-color: var(--light-bg);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.font-script {
+  font-family: 'Brush Script MT', 'Caveat', cursive, sans-serif;
+}
+
+/* Header Estilo Dark & Gold */
+.bf-header {
+  background: #121212 !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bf-nav-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  padding: 6px 14px;
+}
+
+.bf-nav-btn:hover {
+  color: var(--primary-gold) !important;
+  background: rgba(245, 166, 35, 0.08);
+}
+
+.bf-nav-btn-active {
+  color: var(--primary-gold) !important;
+}
+
+/* Enlaces de Categorías Rápidas en el Header */
+.bf-header-cat-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.76rem;
+  letter-spacing: 0.4px;
+  color: #CCCCCC;
+  border-radius: 6px;
+  padding: 4px 9px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.bf-header-cat-btn:hover {
+  color: var(--primary-gold) !important;
+  background: rgba(245, 166, 35, 0.1);
+}
+
+.bf-header-cat-btn.active {
+  color: #121212 !important;
+  background-color: var(--primary-gold) !important;
+}
+
+/* Menú a Mano Izquierda (Sidebar Sencillo y Minimalista) */
+.bf-sidebar-item {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #CCCCCC;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  padding: 8px 12px;
+  transition: all 0.18s ease;
+}
+
+.bf-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--primary-gold) !important;
+}
+
+.bf-sidebar-item.active {
+  background: var(--primary-gold) !important;
+  color: #121212 !important;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.bf-sidebar-item.active .q-icon {
+  color: #121212 !important;
+}
+
+.bf-sidebar-item.active .q-badge {
+  background-color: #121212 !important;
+  color: var(--primary-gold) !important;
+}
+
+/* Botones de Estilo Imagen de Referencia */
+.btn-gold {
+  background-color: var(--primary-gold) !important;
+  color: #121212 !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 8px 22px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.btn-gold:hover {
+  background-color: var(--primary-gold-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 166, 35, 0.35);
+}
+
+.btn-dark-outline {
+  border: 1.5px solid #444444 !important;
+  color: #FFFFFF !important;
+  background: transparent !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 8px 20px;
+  letter-spacing: 0.4px;
+  transition: all 0.2s ease;
+}
+
+.btn-dark-outline:hover {
+  border-color: var(--primary-gold) !important;
+  color: var(--primary-gold) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Hero Section Dark */
+.hero-dark {
+  background-color: #121212;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-title {
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.75rem;
+  }
+}
+
+.text-gold {
+  color: var(--primary-gold) !important;
+}
+
+.bg-gold {
+  background-color: var(--primary-gold) !important;
+}
+
+/* Features Strip Dark */
+.features-strip {
+  background-color: #0E0E0E;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Tarjetas de Producto / Favoritos */
+.favorite-card {
+  background: #FFFFFF;
+  border: 1px solid #ECECEC;
+  border-radius: 14px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.favorite-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border-color: #DFDFDF;
+}
+
+/* Tarjeta Destacada: Recomendación del Chef */
+.chef-recommendation-card {
+  border: 2px solid var(--primary-gold) !important;
+  background: linear-gradient(180deg, #FFFDF8 0%, #FFFFFF 100%) !important;
+  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.16) !important;
+  position: relative;
+}
+
+.chef-recommendation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(245, 166, 35, 0.28) !important;
+}
+
+/* Quasar q-img content resets for custom overlays */
+.q-img__content > div.card-badge-row {
+  background: transparent !important;
+  padding: 8px 10px !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  pointer-events: none !important;
+}
+
+/* Insignias de Producto Estilo Píldora Moderno */
+.chef-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #181818;
+  color: var(--primary-gold);
+  border: 1px solid var(--primary-gold);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.tag-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.tag-mas-pedido {
+  background: #D97706;
+}
+
+.tag-nuevo {
+  background: #2563EB;
+}
+
+.tag-picante {
+  background: #DC2626;
+}
+
+.tag-vegetariano {
+  background: #16A34A;
+}
+
+.tag-promo {
+  background: #7C3AED;
+}
+
+.tag-default {
+  background: #4B5563;
+}
+
+.chef-badge {
+  background: linear-gradient(135deg, #121212 0%, #2A2A2A 100%);
+  color: var(--primary-gold);
+  border: 1px solid var(--primary-gold);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Banner Hero GOOD FOOD FAST & FRESH (Diseño exacto de la referencia del usuario) */
+.fast-fresh-hero {
+  position: relative;
+  background: #0A0A0A;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(245, 166, 35, 0.18);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+}
+
+.fast-fresh-splash-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(circle at 60% 45%, rgba(245, 166, 35, 0.22) 0%, rgba(245, 166, 35, 0.08) 45%, transparent 70%);
+}
+
+.hero-cravings {
+  font-family: 'Caveat', cursive;
+  font-size: 1.8rem;
+  color: #F5A623;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
+
+.hero-main-title {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+  line-height: 0.92;
+  letter-spacing: 1.5px;
+  margin: 4px 0 12px 0;
+}
+
+.hero-order-btn {
+  background: #F5A623 !important;
+  color: #0A0A0A !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.8px;
+  border-radius: 9999px !important;
+  padding: 10px 24px !important;
+  box-shadow: 0 6px 18px rgba(245, 166, 35, 0.35) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.45) !important;
+}
+
+.fresh-seal-gold {
+  position: absolute;
+  bottom: 24px;
+  left: 12px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px dashed #F5A623;
+  background: #0D0D0D;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  z-index: 3;
+}
+
+.fresh-seal-gold .seal-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #F5A623;
+}
+
+.fresh-seal-gold .seal-word-1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 1px;
+  color: #FFFFFF;
+}
+
+.fresh-seal-gold .seal-word-2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.54rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  color: #B0B0B0;
+}
+
+.hero-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-feature-icon {
+  color: #F5A623;
+  font-size: 22px;
+}
+
+.hero-feature-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.hero-feature-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  color: #9E9E9E;
+  line-height: 1.2;
+}
+
+.border-top-dark {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Banner Horizontal de Portada para Cada Categoría */
+.cat-hero-banner {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.cat-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(14, 14, 14, 0.94) 0%, rgba(18, 18, 18, 0.82) 55%, rgba(0, 0, 0, 0.45) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.5rem;
+  z-index: 2;
+}
+
+@media (max-width: 600px) {
+  .cat-hero-overlay {
+    padding: 1.5rem;
+    background: linear-gradient(180deg, rgba(14, 14, 14, 0.95) 0%, rgba(18, 18, 18, 0.88) 100%);
+  }
+}
+
+/* Botón de WhatsApp */
+.btn-whatsapp {
+  background-color: #25D366 !important;
+  color: #FFFFFF !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 8px 20px;
+  letter-spacing: 0.4px;
+  transition: all 0.2s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: #20BA5A !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+}
+
+/* Tarjetas del Equipo de Trabajo */
+.team-member-card {
+  background: #FFFFFF;
+  border: 1px solid #ECECEC;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.team-member-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.09);
+  border-color: var(--primary-gold);
+}
+
+.product-price {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-gold);
+}
+
+.btn-add-product {
+  background-color: #121212 !important;
+  color: #FFFFFF !important;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-add-product:hover {
+  background-color: var(--primary-gold) !important;
+  color: #121212 !important;
+  transform: scale(1.06);
+}
+
+/* Sello Redondo Dorado */
+.fresh-seal {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px dashed var(--primary-gold);
+  color: var(--primary-gold);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Banner de Promoción Dividido (Combo + Sobre Nosotros) */
+.mid-banner-combo {
+  background: #141414;
+  color: #FFFFFF;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mid-banner-about {
+  background: var(--primary-gold);
+  color: #121212;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Barra de Pasos de Pedido */
+.order-stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+.order-stepper-item.completed .step-circle {
+  background-color: #16A34A;
+  color: #FFFFFF;
+}
+
+.order-stepper-item.active .step-circle {
+  background-color: var(--primary-gold);
+  color: #121212;
+  box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.25);
+}
+
+.order-stepper-item.pending .step-circle {
+  background-color: #E0E0E0;
+  color: #888888;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+/* Footer Dark */
+.bf-footer {
+  background-color: #0E0E0E;
+  color: #FFFFFF;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-link {
+  color: #888888;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--primary-gold);
+}
+
+/* Estilo de Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-gold);
+}
+
+</style>
