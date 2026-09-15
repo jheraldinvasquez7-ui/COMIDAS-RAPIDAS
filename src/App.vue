@@ -1,416 +1,1259 @@
 <template>
-  <q-layout view="lHh Lpr lff" class="bg-grey-1">
-    <!-- Header Principal -->
-    <q-header elevated class="bb-header q-py-xs">
-      <q-toolbar class="q-px-md q-px-md-xl">
-        <!-- Botón del menú lateral -->
-        <q-btn
-          flat
-          dense
-          icon="menu"
-          label="Menú"
-          aria-label="Abrir menú lateral"
-          class="side-menu-button text-dark q-mr-sm"
-          @click="menuMovil = !menuMovil"
-        />
-
-        <!-- Logo Burger Bite -->
-        <router-link to="/hamburguesas" class="row items-center no-wrap text-decoration-none cursor-pointer">
-          <div class="logo-circle q-mr-sm flex flex-center">
-            <q-icon name="lunch_dining" size="24px" color="white" />
-          </div>
-          <div class="column">
-            <div class="row items-center no-wrap">
-              <span class="text-h5 text-weight-bolder text-dark font-heading q-mr-xs" style="line-height: 1;">Burger</span>
-              <span class="text-h5 text-weight-bolder text-negative font-heading" style="line-height: 1;">Bite</span>
-            </div>
-            <span class="text-caption text-grey-6 text-weight-medium" style="font-size: 0.65rem; letter-spacing: 0.8px; margin-top: -2px;">
-              COMIDA RÁPIDA Y PARRILLA
+  <q-layout view="lHh Lpr lFf" class="bg-dark-base text-dark">
+    <!-- TOP HEADER SIMPLE & ELEGANTE -->
+    <q-header elevated class="bg-dark text-white border-subtle q-py-xs">
+      <q-toolbar class="row items-center justify-between q-px-md">
+        <!-- Botón para alternar menú izquierdo (en móviles/tablets o colapsar) -->
+        <div class="row items-center q-gutter-sm">
+          <q-btn
+            flat
+            dense
+            round
+            icon="menu"
+            color="amber-8"
+            @click="drawerLeft = !drawerLeft"
+            aria-label="Menú Lateral"
+          />
+          <div class="row items-center cursor-pointer gt-xs" @click="cambiarSeccion('inicio')">
+            <q-avatar size="34px" color="amber-8" text-color="dark" class="q-mr-xs shadow-1">
+              <q-icon name="lunch_dining" size="22px" />
+            </q-avatar>
+            <span class="text-subtitle1 text-weight-bolder text-white font-heading" style="letter-spacing: 0.5px;">
+              BURGER <span class="text-gold">FACTORY</span>
             </span>
           </div>
-        </router-link>
-
-        <q-space />
-
-        <!-- Enlaces de Navegación Desktop -->
-        <div class="gt-sm row items-center q-gutter-x-xs">
-          <q-btn
-            flat
-            to="/hamburguesas"
-            label="Hamburguesas"
-            class="bb-nav-btn"
-          />
-          <q-btn
-            flat
-            to="/perros"
-            label="Perros"
-            class="bb-nav-btn"
-          />
-          <q-btn
-            flat
-            to="/pizzas"
-            label="Pizzas"
-            class="bb-nav-btn"
-          />
-          <q-btn
-            flat
-            to="/bebidas"
-            label="Bebidas"
-            class="bb-nav-btn"
-          />
-          <q-btn
-            flat
-            to="/postres"
-            label="Postres"
-            class="bb-nav-btn"
-          />
-          <q-btn
-            flat
-            to="/promociones"
-            label="Promociones"
-            class="bb-nav-btn"
-          >
-            <q-badge color="negative" floating rounded>PROMO</q-badge>
-          </q-btn>
-          <q-btn
-            flat
-            to="/nosotros"
-            label="Nosotros"
-            class="bb-nav-btn"
-          />
+          <!-- Título de la sección activa actual -->
+          <q-separator vertical dark inset class="q-mx-sm gt-sm opacity-20" />
+          <div class="text-caption text-weight-bold text-gold text-uppercase gt-sm">
+            {{ obtenerTituloSeccionActiva(seccionActiva) }}
+          </div>
         </div>
 
-        <q-space />
+        <!-- Botones de Acción: Mis Pedidos y Pedir en Línea -->
+        <div class="row items-center q-gutter-sm">
+          <!-- Mis Pedidos -->
+          <q-btn
+            flat
+            dense
+            class="text-white q-px-sm"
+            :class="{ 'text-gold': seccionActiva === 'pedidos' }"
+            @click="cambiarSeccion('pedidos')"
+          >
+            <q-icon name="moped" size="20px" />
+            <span class="gt-xs q-ml-xs text-weight-bold text-caption">Mis Pedidos</span>
+            <q-badge v-if="pedidos.length > 0" color="amber-8" text-color="dark" floating rounded>
+              {{ pedidos.length }}
+            </q-badge>
+          </q-btn>
 
+          <!-- Pedir en Línea (Abre Carrito) -->
+          <q-btn
+            unelevated
+            class="btn-gold text-weight-bolder"
+            @click="drawerCarrito = true"
+          >
+            <q-icon name="shopping_bag" size="18px" class="q-mr-xs" />
+            <span>PEDIR EN LÍNEA</span>
+            <q-badge color="dark" text-color="amber-8" class="q-ml-sm text-weight-bolder">
+              {{ contarItemsCarrito() }}
+            </q-badge>
+          </q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
-    <!-- Menú lateral izquierdo -->
+    <!-- ============================================================== -->
+    <!-- MENÚ A MANO IZQUIERDA (SUPERPUESTO, SE CIERRA AL DAR CLIC O AFUERA) -->
+    <!-- ============================================================== -->
     <q-drawer
-      v-model="menuMovil"
+      v-model="drawerLeft"
       side="left"
       overlay
+      :width="270"
       bordered
-      :width="300"
-      class="side-drawer bg-white q-pa-md"
+      class="bg-dark text-white border-subtle column justify-between shadow-24"
     >
-      <div class="row items-center justify-between q-mb-md">
-        <div class="row items-center">
-          <div class="logo-circle q-mr-sm flex flex-center">
-            <q-icon name="lunch_dining" size="20px" color="white" />
+      <!-- Menú limpio para dar click -->
+      <div class="q-pa-md">
+        <!-- Encabezado del Menú Lateral con Botón Cerrar -->
+        <div class="row items-center justify-between q-mb-md q-px-xs">
+          <div class="row items-center cursor-pointer" @click="cambiarSeccion('inicio')">
+            <q-avatar size="32px" color="amber-8" text-color="dark" class="q-mr-sm">
+              <q-icon name="lunch_dining" size="20px" />
+            </q-avatar>
+            <div class="text-subtitle1 text-weight-bolder text-white font-heading">
+              BURGER <span class="text-gold">FACTORY</span>
+            </div>
           </div>
-          <span class="text-h6 text-weight-bolder text-dark font-heading">Burger <span class="text-negative">Bite</span></span>
+          <q-btn flat round dense icon="close" color="grey-5" @click="drawerLeft = false" />
         </div>
-        <q-btn flat round dense icon="close" aria-label="Cerrar menú" @click="menuMovil = false" />
+
+        <q-separator dark class="q-mb-md opacity-20" />
+
+        <!-- LISTA DEL MENÚ SENCILLO PARA DAR CLICK -->
+        <q-list class="q-gutter-y-xs">
+          <!-- 0. Inicio -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'inicio' }]"
+            @click="cambiarSeccion('inicio')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="home" :color="seccionActiva === 'inicio' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Inicio
+            </q-item-section>
+          </q-item>
+
+          <!-- 1. Hamburguesas -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'hamburguesas' }]"
+            @click="cambiarSeccion('hamburguesas')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="lunch_dining" :color="seccionActiva === 'hamburguesas' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Hamburguesas
+            </q-item-section>
+          </q-item>
+
+          <!-- 2. Perros -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'perros' }]"
+            @click="cambiarSeccion('perros')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="fastfood" :color="seccionActiva === 'perros' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Perros
+            </q-item-section>
+          </q-item>
+
+          <!-- 3. Pizzas -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'pizzas' }]"
+            @click="cambiarSeccion('pizzas')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="local_pizza" :color="seccionActiva === 'pizzas' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Pizzas
+            </q-item-section>
+          </q-item>
+
+          <!-- 4. Bebidas -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'bebidas' }]"
+            @click="cambiarSeccion('bebidas')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="local_bar" :color="seccionActiva === 'bebidas' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Bebidas
+            </q-item-section>
+          </q-item>
+
+          <!-- 5. Postres -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'postres' }]"
+            @click="cambiarSeccion('postres')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="cake" :color="seccionActiva === 'postres' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Postres
+            </q-item-section>
+          </q-item>
+
+          <!-- 6. Promociones -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'promociones' }]"
+            @click="cambiarSeccion('promociones')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="loyalty" :color="seccionActiva === 'promociones' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Promociones
+            </q-item-section>
+          </q-item>
+
+          <q-separator dark class="q-my-sm opacity-20" />
+
+          <!-- 7. Nosotros -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'nosotros' }]"
+            @click="cambiarSeccion('nosotros')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="groups" :color="seccionActiva === 'nosotros' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Nosotros
+            </q-item-section>
+          </q-item>
+
+          <!-- 8. Mis Pedidos -->
+          <q-item
+            clickable
+            v-ripple
+            :class="['bf-sidebar-item', { active: seccionActiva === 'pedidos' }]"
+            @click="cambiarSeccion('pedidos')"
+          >
+            <q-item-section avatar style="min-width: 36px;">
+              <q-icon name="moped" :color="seccionActiva === 'pedidos' ? 'dark' : 'amber-8'" size="20px" />
+            </q-item-section>
+            <q-item-section class="text-weight-bold">
+              Mis Pedidos
+            </q-item-section>
+            <q-item-section side v-if="pedidos.length > 0">
+              <q-badge color="amber-8" text-color="dark">{{ pedidos.length }}</q-badge>
+            </q-item-section>
+          </q-item>
+        </q-list>
       </div>
 
-      <q-separator class="q-mb-md" />
-
-      <q-list class="text-dark font-weight-medium">
-        <q-item clickable v-ripple to="/hamburguesas" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="lunch_dining" color="negative" /></q-item-section>
-          <q-item-section class="text-weight-bold">Hamburguesas</q-item-section>
-        </q-item>
-        <q-item clickable v-ripple to="/perros" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="local_see" color="amber-9" /></q-item-section>
-          <q-item-section class="text-weight-bold">Perros Calientes</q-item-section>
-        </q-item>
-        <q-item clickable v-ripple to="/pizzas" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="local_pizza" color="deep-orange" /></q-item-section>
-          <q-item-section class="text-weight-bold">Pizzas</q-item-section>
-        </q-item>
-        <q-item clickable v-ripple to="/bebidas" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="local_bar" color="blue" /></q-item-section>
-          <q-item-section class="text-weight-bold">Bebidas y malteadas</q-item-section>
-        </q-item>
-        <q-item clickable v-ripple to="/postres" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="cake" color="pink" /></q-item-section>
-          <q-item-section class="text-weight-bold">Postres</q-item-section>
-        </q-item>
-        <q-item clickable v-ripple to="/promociones" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="local_offer" color="negative" /></q-item-section>
-          <q-item-section class="text-weight-bold">Promociones</q-item-section>
-          <q-item-section side><q-badge color="negative">20% OFF</q-badge></q-item-section>
-        </q-item>
-        <q-item clickable v-ripple to="/nosotros" @click="menuMovil = false">
-          <q-item-section avatar><q-icon name="storefront" color="grey-8" /></q-item-section>
-          <q-item-section class="text-weight-bold">Sobre Nosotros</q-item-section>
-        </q-item>
-      </q-list>
-
+      <!-- Pie del Menú Lateral Sencillo -->
+      <div class="q-pa-md border-subtle">
+        <q-btn
+          unelevated
+          class="btn-gold full-width text-weight-bolder"
+          icon="shopping_bag"
+          label="PEDIR EN LÍNEA"
+          @click="drawerCarrito = true; drawerLeft = false"
+        >
+          <q-badge v-if="contarItemsCarrito() > 0" color="dark" text-color="amber-8" class="q-ml-sm text-weight-bolder">
+            {{ contarItemsCarrito() }}
+          </q-badge>
+        </q-btn>
+      </div>
     </q-drawer>
 
-    <!-- Contenedor Principal de Vistas -->
+    <!-- ============================================================== -->
+    <!-- CONTENIDO PRINCIPAL SEGÚN SECCIÓN SELECCIONADA                -->
+    <!-- ============================================================== -->
     <q-page-container>
-      <!-- Hero Promocional Superior (Inspirado en la imagen de referencia) -->
-      <section v-if="esVistaInicio" class="hero-section q-pa-md q-pa-md-xl">
-        <div class="hero-container row items-center justify-between">
-          <div class="col-12 col-md-6 q-pr-md-xl q-mb-lg q-mb-md-none">
-            <div class="text-overline text-negative text-weight-bolder letter-spacing-2 q-mb-xs">
-              BUENA COMIDA. BUEN ÁNIMO.
+      <!-- 0. VISTA: INICIO (HOME CON HERO, MENÚ DIGITAL DE CATEGORÍAS Y REDIRECCIÓN) -->
+      <div v-if="seccionActiva === 'inicio'" class="q-pa-md q-pa-md-xl max-w-7xl mx-auto">
+        <!-- BANNER DE BIENVENIDA COMPACTO Y ELEGANTE DE INICIO -->
+        <div class="inicio-hero-banner q-mb-lg">
+          <q-img
+            src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80"
+            class="full-width full-height"
+            style="height: 160px;"
+          />
+          <div class="inicio-hero-overlay">
+            <div>
+              <div class="row items-center q-gutter-x-xs text-gold q-mb-xs">
+                <q-icon name="local_fire_department" size="16px" />
+                <span class="text-caption text-weight-bolder text-uppercase" style="letter-spacing: 1px;">
+                  Parrilla Artesanal desde 2016
+                </span>
+              </div>
+              <h1 class="text-h5 text-md-h4 text-weight-bolder text-white font-heading q-my-none">
+                BURGER <span class="text-gold">FACTORY</span>
+              </h1>
+              <p class="text-grey-4 text-caption q-mt-xs q-mb-none gt-xs" style="max-width: 520px; line-height: 1.3;">
+                Cortes selectos Angus a la brasa, pan brioche recién horneado y recetas exclusivas.
+              </p>
             </div>
-            <h1 class="hero-title text-dark font-heading q-my-none">
-              GRANDES BOCADOS,<br><span class="text-negative">MEJORES MOMENTOS.</span>
-            </h1>
-            <p class="text-body1 text-grey-8 q-mt-md q-mb-lg" style="max-width: 480px; font-size: 1.12rem; line-height: 1.6;">
-              Hamburguesas jugosas, papas crujientes y malteadas deliciosas, preparadas al momento con carne Angus 100%.
-            </p>
 
-            <div class="row items-center q-gutter-md q-mb-xl">
+            <div class="row items-center q-gutter-xs">
+              <q-btn
+                unelevated
+                dense
+                class="btn-gold q-px-md text-weight-bolder"
+                icon="restaurant_menu"
+                label="Ver Menú"
+                @click="cambiarSeccion('hamburguesas')"
+              />
               <q-btn
                 outline
-                class="btn-red-outline q-px-lg q-py-sm"
-                to="/promociones"
-                label="VER PROMOCIONES"
-              />
-            </div>
-
-            <!-- 3 Badges Claves según imagen -->
-            <div class="row q-gutter-md">
-              <div class="row items-center q-gutter-xs">
-                <q-avatar size="36px" color="red-1" text-color="negative">
-                  <q-icon name="local_fire_department" />
-                </q-avatar>
-                <div class="column">
-                  <span class="text-caption text-weight-bolder text-dark">A LA BRASA</span>
-                  <span class="text-caption text-grey-6" style="font-size: 0.65rem;">PARRILLA</span>
-                </div>
-              </div>
-
-              <div class="row items-center q-gutter-xs">
-                <q-avatar size="36px" color="red-1" text-color="negative">
-                  <q-icon name="lunch_dining" />
-                </q-avatar>
-                <div class="column">
-                  <span class="text-caption text-weight-bolder text-dark">FRESCOS</span>
-                  <span class="text-caption text-grey-6" style="font-size: 0.65rem;">INGREDIENTES</span>
-                </div>
-              </div>
-
-              <div class="row items-center q-gutter-xs">
-                <q-avatar size="36px" color="red-1" text-color="negative">
-                  <q-icon name="delivery_dining" />
-                </q-avatar>
-                <div class="column">
-                  <span class="text-caption text-weight-bolder text-dark">RÁPIDO</span>
-                  <span class="text-caption text-grey-6" style="font-size: 0.65rem;">DOMICILIO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Imagen Hero con Splash Rojo y Badge 100% Fresh -->
-          <div class="col-12 col-md-6 flex flex-center position-relative">
-            <div class="hero-image-wrapper">
-              <div class="fresh-badge flex flex-center column">
-                <span class="text-weight-bolder text-dark" style="font-size: 0.85rem; line-height: 1;">100%</span>
-                <span class="text-caption text-weight-bold text-dark" style="font-size: 0.65rem; line-height: 1;">FRESCO Y</span>
-                <span class="text-caption text-weight-bold text-negative" style="font-size: 0.65rem; line-height: 1;">SABROSO</span>
-              </div>
-              <img
-                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=80"
-                alt="Burger Bite Hero Burger"
-                class="hero-burger-img"
+                dense
+                class="text-white border-subtle q-px-sm text-weight-bold"
+                icon="groups"
+                label="Nosotros"
+                @click="cambiarSeccion('nosotros')"
               />
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- Router View dinámico -->
-      <router-view />
-
-      <!-- Banner Inferior de Combo (Fiel a la imagen de referencia) -->
-      <section class="q-px-md q-px-md-xl q-my-xl">
-        <div class="combo-promo-banner row items-center justify-between q-pa-lg q-pa-md-xl">
-          <div class="col-12 col-md-4 text-center q-mb-md q-mb-md-none">
-            <img
-              src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=600&q=80"
-              alt="Combo Meal"
-              class="combo-image"
-            />
+        <!-- SECCIÓN: MENÚ DIGITAL DE COMIDAS RÁPIDAS (CATEGORÍAS INTERACTIVAS) -->
+        <div class="q-mb-xl">
+          <div class="text-center q-mb-lg">
+            <div class="text-caption text-weight-bold text-gold text-uppercase" style="letter-spacing: 1.5px;">
+              Carta Gastronómica
+            </div>
+            <h2 class="text-h4 text-weight-bolder text-dark font-heading q-my-xs">
+              MENÚ DIGITAL DE COMIDAS RÁPIDAS
+            </h2>
+            <p class="text-grey-7 text-caption text-sm-body2 q-mx-auto" style="max-width: 600px;">
+              Selecciona una categoría para explorar nuestros productos artesanales preparados al instante.
+            </p>
           </div>
 
-          <div class="col-12 col-md-5 text-center text-md-left q-mb-md q-mb-md-none text-white">
-            <div class="text-overline text-grey-3 text-weight-bolder letter-spacing-2">
-              HAZLO UN
+          <!-- GRID DE LAS 6 CATEGORÍAS -->
+          <div class="row q-col-gutter-lg">
+            <!-- 1. Hamburguesas -->
+            <div class="col-12 col-sm-6 col-md-4">
+              <q-card
+                class="favorite-card cursor-pointer full-height column justify-between"
+                @click="cambiarSeccion('hamburguesas')"
+              >
+                <div>
+                  <q-img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80" :ratio="16/10">
+                    <div class="card-badge-row">
+                      <span class="chef-pill-badge"><q-icon name="restaurant" size="12px" class="q-mr-xs text-gold" />Especialidad</span>
+                      <span class="tag-pill-badge tag-mas-pedido">5 Variedades</span>
+                    </div>
+                  </q-img>
+                  <q-card-section class="q-pa-md">
+                    <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                      Sección de Hamburguesas
+                    </div>
+                    <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4;">
+                      Carne 100% Angus certificada a la brasa, queso cheddar fundido y pan brioche dorado.
+                    </p>
+                  </q-card-section>
+                </div>
+                <q-card-section class="q-px-md q-pb-md q-pt-none">
+                  <q-btn unelevated class="btn-gold full-width text-weight-bolder" label="Ver Hamburguesas" icon-right="arrow_forward" />
+                </q-card-section>
+              </q-card>
             </div>
-            <h2 class="text-h2 text-weight-bolder text-white font-heading q-my-none">
-              COMBO PERFECTO.
+
+            <!-- 2. Perros Calientes -->
+            <div class="col-12 col-sm-6 col-md-4">
+              <q-card
+                class="favorite-card cursor-pointer full-height column justify-between"
+                @click="cambiarSeccion('perros')"
+              >
+                <div>
+                  <q-img src="https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=700&q=80" :ratio="16/10">
+                    <div class="card-badge-row">
+                      <span class="chef-pill-badge"><q-icon name="local_fire_department" size="12px" class="q-mr-xs text-gold" />Gourmet</span>
+                      <span class="tag-pill-badge tag-nuevo">5 Variedades</span>
+                    </div>
+                  </q-img>
+                  <q-card-section class="q-pa-md">
+                    <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                      Sección de Perros Calientes
+                    </div>
+                    <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4;">
+                      Salchicha americana ahumada, tocineta crocante, queso costeño gratinado y papas chip.
+                    </p>
+                  </q-card-section>
+                </div>
+                <q-card-section class="q-px-md q-pb-md q-pt-none">
+                  <q-btn unelevated class="btn-gold full-width text-weight-bolder" label="Ver Perros" icon-right="arrow_forward" />
+                </q-card-section>
+              </q-card>
+            </div>
+
+            <!-- 3. Pizzas -->
+            <div class="col-12 col-sm-6 col-md-4">
+              <q-card
+                class="favorite-card cursor-pointer full-height column justify-between"
+                @click="cambiarSeccion('pizzas')"
+              >
+                <div>
+                  <q-img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80" :ratio="16/10">
+                    <div class="card-badge-row">
+                      <span class="chef-pill-badge"><q-icon name="local_pizza" size="12px" class="q-mr-xs text-gold" />A la Piedra</span>
+                      <span class="tag-pill-badge tag-mas-pedido">5 Variedades</span>
+                    </div>
+                  </q-img>
+                  <q-card-section class="q-pa-md">
+                    <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                      Sección de Pizzas
+                    </div>
+                    <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4;">
+                      Masa madre de fermentación lenta, queso mozzarella estirado a mano e ingredientes premium.
+                    </p>
+                  </q-card-section>
+                </div>
+                <q-card-section class="q-px-md q-pb-md q-pt-none">
+                  <q-btn unelevated class="btn-gold full-width text-weight-bolder" label="Ver Pizzas" icon-right="arrow_forward" />
+                </q-card-section>
+              </q-card>
+            </div>
+
+            <!-- 4. Bebidas -->
+            <div class="col-12 col-sm-6 col-md-4">
+              <q-card
+                class="favorite-card cursor-pointer full-height column justify-between"
+                @click="cambiarSeccion('bebidas')"
+              >
+                <div>
+                  <q-img src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=700&q=80" :ratio="16/10">
+                    <div class="card-badge-row">
+                      <span class="chef-pill-badge"><q-icon name="local_bar" size="12px" class="q-mr-xs text-gold" />Heladas</span>
+                      <span class="tag-pill-badge tag-promo">5 Variedades</span>
+                    </div>
+                  </q-img>
+                  <q-card-section class="q-pa-md">
+                    <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                      Sección de Bebidas & Malteadas
+                    </div>
+                    <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4;">
+                      Malteadas cremosas artesanales, limonadas naturales y gaseosas bien frías.
+                    </p>
+                  </q-card-section>
+                </div>
+                <q-card-section class="q-px-md q-pb-md q-pt-none">
+                  <q-btn unelevated class="btn-gold full-width text-weight-bolder" label="Ver Bebidas" icon-right="arrow_forward" />
+                </q-card-section>
+              </q-card>
+            </div>
+
+            <!-- 5. Postres -->
+            <div class="col-12 col-sm-6 col-md-4">
+              <q-card
+                class="favorite-card cursor-pointer full-height column justify-between"
+                @click="cambiarSeccion('postres')"
+              >
+                <div>
+                  <q-img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=700&q=80" :ratio="16/10">
+                    <div class="card-badge-row">
+                      <span class="chef-pill-badge"><q-icon name="cake" size="12px" class="q-mr-xs text-gold" />Caseros</span>
+                      <span class="tag-pill-badge tag-mas-pedido">5 Variedades</span>
+                    </div>
+                  </q-img>
+                  <q-card-section class="q-pa-md">
+                    <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                      Sección de Postres
+                    </div>
+                    <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4;">
+                      Brownies con helado, churros azucarados con arequipe y volcanes de chocolate.
+                    </p>
+                  </q-card-section>
+                </div>
+                <q-card-section class="q-px-md q-pb-md q-pt-none">
+                  <q-btn unelevated class="btn-gold full-width text-weight-bolder" label="Ver Postres" icon-right="arrow_forward" />
+                </q-card-section>
+              </q-card>
+            </div>
+
+            <!-- 6. Promociones -->
+            <div class="col-12 col-sm-6 col-md-4">
+              <q-card
+                class="favorite-card cursor-pointer full-height column justify-between"
+                @click="cambiarSeccion('promociones')"
+              >
+                <div>
+                  <q-img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=700&q=80" :ratio="16/10">
+                    <div class="card-badge-row">
+                      <span class="chef-pill-badge"><q-icon name="loyalty" size="12px" class="q-mr-xs text-gold" />Combos</span>
+                      <span class="tag-pill-badge tag-promo">Ahorro</span>
+                    </div>
+                  </q-img>
+                  <q-card-section class="q-pa-md">
+                    <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                      Sección de Promociones
+                    </div>
+                    <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4;">
+                      Combos familiares, combos para 2 y promociones especiales con papas y bebida.
+                    </p>
+                  </q-card-section>
+                </div>
+                <q-card-section class="q-px-md q-pb-md q-pt-none">
+                  <q-btn unelevated class="btn-gold full-width text-weight-bolder" label="Ver Promociones" icon-right="arrow_forward" />
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
+        </div>
+
+        <!-- BANNER NOSOTROS EN INICIO -->
+        <div class="bg-dark text-white rounded-borders q-pa-lg q-pa-md-xl border-subtle q-mb-xl row items-center justify-between">
+          <div class="col-12 col-md-8 q-mb-md q-mb-md-none">
+            <div class="text-gold font-script text-h6 q-mb-xs">Tradición y Calidad</div>
+            <div class="text-h4 text-weight-bolder font-heading text-white q-mb-sm">
+              SOBRE BURGER FACTORY
+            </div>
+            <p class="text-grey-4 text-body1 q-mb-none" style="line-height: 1.6;">
+              Nacimos en 2016 con una misión inquebrantable: llevar la mejor parrilla artesanal a cada rincón de la ciudad. Conoce a nuestro equipo de cocina, nuestros valores y nuestras sedes de atención.
+            </p>
+          </div>
+          <div class="col-12 col-md-3 text-md-right">
+            <q-btn
+              unelevated
+              size="lg"
+              class="btn-gold text-weight-bolder full-width"
+              icon="groups"
+              label="Conoce al Equipo"
+              @click="cambiarSeccion('nosotros')"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. VISTAS DE CATEGORÍA (HAMBURGUESAS, PERROS, PIZZAS, BEBIDAS, POSTRES, PROMOS) -->
+      <div v-else-if="esCategoriaActiva(seccionActiva)" class="q-pa-md q-pa-md-xl max-w-7xl mx-auto">
+        <!-- BANNER HORIZONTAL DE PORTADA APETITOSO DE LA CATEGORÍA -->
+        <div class="cat-hero-banner q-mb-xl relative-position">
+          <q-img
+            :src="obtenerConfigCategoria(seccionActiva).banner"
+            class="full-width full-height"
+            style="min-height: 240px; max-height: 290px;"
+          />
+          <div class="cat-hero-overlay">
+            <div class="text-gold font-script text-h5 q-mb-xs">
+              {{ obtenerConfigCategoria(seccionActiva).subtitulo }}
+            </div>
+            <!-- Nombre de la categoría como título principal -->
+            <h1 class="text-h3 text-md-h2 text-weight-bolder text-white font-heading q-my-none">
+              {{ obtenerConfigCategoria(seccionActiva).nombre.toUpperCase() }}
+            </h1>
+            <!-- Descripción breve de la categoría -->
+            <p class="text-grey-3 text-body1 q-mt-sm q-mb-none" style="max-width: 650px; line-height: 1.5;">
+              {{ obtenerConfigCategoria(seccionActiva).descripcion }}
+            </p>
+          </div>
+        </div>
+
+        <!-- ENCABEZADO DE SECCIÓN CON INCLUYE RECOMENDACIÓN DEL CHEF -->
+        <div class="row items-center justify-between q-mb-lg">
+          <div>
+            <div class="text-caption text-weight-bold text-gold text-uppercase">
+              Selección Especializada
+            </div>
+            <h2 class="text-h4 text-weight-bolder text-dark font-heading q-my-none">
+              NUESTRAS ESPECIALIDADES
             </h2>
-            <p class="text-subtitle1 text-grey-2 q-mt-sm q-mb-md">
-              Agrega papas crujientes y una malteada o bebida fría, y ahorra hasta un 20% en tu pedido.
+          </div>
+          <div class="row items-center q-gutter-sm">
+            <q-chip outline color="amber-9" icon="star" class="text-weight-bold">
+              Incluye Recomendación del Chef
+            </q-chip>
+          </div>
+        </div>
+
+        <!-- GRILLA DE PRODUCTOS (5 OPCIONES POR CATEGORÍA) -->
+        <div class="row q-col-gutter-lg">
+          <div
+            v-for="producto in obtenerProductosDeCategoria(seccionActiva)"
+            :key="producto.id"
+            class="col-12 col-sm-6 col-md-4"
+          >
+            <!-- CARD DEL PRODUCTO (Toda la tarjeta es clickeable para ver detalles) -->
+            <q-card
+              :class="[
+                'favorite-card full-height column justify-between cursor-pointer',
+                { 'chef-recommendation-card': producto.esRecomendacionChef }
+              ]"
+              @click="abrirModalDetalle(producto)"
+            >
+              <div>
+                <!-- Imagen del Producto con Badges Píldora Limpios -->
+                <div class="relative-position">
+                  <q-img
+                    :src="producto.imagen"
+                    :ratio="16/10"
+                  >
+                    <div class="card-badge-row">
+                      <!-- Insignia RECOMENDACIÓN DEL CHEF destacada -->
+                      <div>
+                        <span
+                          v-if="producto.esRecomendacionChef"
+                          class="chef-pill-badge"
+                        >
+                          <q-icon name="restaurant" size="12px" class="q-mr-xs text-gold" />
+                          Chef
+                        </span>
+                      </div>
+
+                      <!-- Etiqueta opcional (Nuevo, Más pedido, Picante, Vegetariano) -->
+                      <div>
+                        <span
+                          v-if="producto.etiqueta"
+                          :class="['tag-pill-badge', getClaseTag(producto.etiqueta)]"
+                        >
+                          {{ producto.etiqueta }}
+                        </span>
+                      </div>
+                    </div>
+                  </q-img>
+                </div>
+
+                <!-- Contenido de la Card: Solo Nombre y Descripción (Sin ingredientes aquí) -->
+                <q-card-section class="q-pa-md">
+                  <!-- Nombre del producto -->
+                  <div class="text-h6 text-weight-bolder text-dark font-heading q-mb-xs">
+                    {{ producto.nombre }}
+                  </div>
+
+                  <!-- Descripción breve -->
+                  <p class="text-grey-7 text-caption q-mb-none" style="line-height: 1.4; min-height: 38px;">
+                    {{ producto.descripcion }}
+                  </p>
+
+                  <!-- Destacado del chef si aplica -->
+                  <div
+                    v-if="producto.esRecomendacionChef"
+                    class="text-caption text-amber-9 text-weight-bold q-mt-sm row items-center"
+                  >
+                    <q-icon name="thumb_up" size="14px" class="q-mr-xs" />
+                    <span>Plato insignia sugerido por nuestro Chef Ejecutivo.</span>
+                  </div>
+                </q-card-section>
+              </div>
+
+              <!-- Pie de la Card con Precio COP y Botón de Agregar -->
+              <q-card-section class="q-px-md q-pb-md q-pt-none row items-center justify-between border-subtle">
+                <div>
+                  <div class="text-caption text-grey-6" style="font-size: 0.72rem;">PRECIO:</div>
+                  <!-- Precio en pesos colombianos formato legible ej. $18.500 -->
+                  <div class="product-price text-h6">
+                    {{ formatCOP(producto.precio) }}
+                  </div>
+                </div>
+
+                <div class="row items-center q-gutter-xs">
+                  <q-btn
+                    unelevated
+                    class="btn-gold q-px-md text-weight-bolder"
+                    icon="add_shopping_cart"
+                    label="Añadir"
+                    @click.stop="agregarAlCarrito(producto, 1)"
+                  />
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. VISTA: SOBRE NOSOTROS -->
+      <div v-else-if="seccionActiva === 'nosotros'" class="q-pa-md q-pa-md-xl max-w-7xl mx-auto">
+        <!-- Banner Portada de Nosotros -->
+        <div class="cat-hero-banner q-mb-xl relative-position">
+          <q-img
+            src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80"
+            class="full-width full-height"
+            style="min-height: 240px; max-height: 290px;"
+          />
+          <div class="cat-hero-overlay">
+            <div class="text-gold font-script text-h5 q-mb-xs">Nuestra Pasión Culinaria</div>
+            <h1 class="text-h3 text-md-h2 text-weight-bolder text-white font-heading q-my-none">
+              SOBRE BURGER FACTORY
+            </h1>
+            <p class="text-grey-3 text-body1 q-mt-sm q-mb-none" style="max-width: 650px; line-height: 1.5;">
+              Conoce la historia detrás de nuestra parrilla artesanal, nuestro equipo y nuestras sedes oficiales.
+            </p>
+          </div>
+        </div>
+
+        <!-- HISTORIA BREVE DEL RESTAURANTE -->
+        <div class="row q-col-gutter-xl items-center q-mb-xl">
+          <div class="col-12 col-md-6">
+            <div class="text-gold font-script text-h5 q-mb-xs">Nuestra Historia</div>
+            <h2 class="text-h3 text-weight-bolder text-dark font-heading q-my-none">
+              PARRILLA ARTESANAL DESDE 2016
+            </h2>
+            <p class="text-grey-8 text-body1 q-mt-md" style="line-height: 1.7;">
+              Burger Factory nació en 2016 como un pequeño food truck impulsado por tres amigos apasionados por la cocina callejera de alta gama. Nuestra misión siempre fue clara: revolucionar el concepto de comidas rápidas demostrando que una hamburguesa, un perro caliente o una pizza pueden ser auténticas obras de arte culinario.
+            </p>
+            <p class="text-grey-8 text-body1" style="line-height: 1.7;">
+              Hoy en día contamos con tres sedes en la ciudad, moliendo cortes selectos de res Angus 100% fresca todos los días, fermentando nuestras masas a la piedra durante 48 horas y horneando pan brioche de mantequilla a diario.
+            </p>
+            <div class="row items-center q-gutter-md q-mt-md">
+              <q-btn
+                unelevated
+                class="btn-gold q-px-lg text-weight-bolder"
+                icon="lunch_dining"
+                label="VER NUESTRO MENÚ"
+                @click="cambiarSeccion('hamburguesas')"
+              />
+              <q-btn
+                outline
+                class="btn-whatsapp q-px-lg text-weight-bold"
+                icon="chat"
+                label="PEDIR POR WHATSAPP"
+                :href="contactoInfo.whatsappUrl"
+                target="_blank"
+              />
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <q-img
+              src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+              class="shadow-10"
+              style="border-radius: 20px; max-height: 380px;"
+            />
+          </div>
+        </div>
+
+        <!-- FOTOS Y NOMBRES DEL EQUIPO (MÍNIMO 3: CHEF, CAJERO, DOMICILIARIO) -->
+        <div class="q-my-xl">
+          <div class="text-center q-mb-lg">
+            <div class="text-gold font-script text-h5 q-mb-xs">Los Creadores del Sabor</div>
+            <h2 class="text-h3 text-weight-bolder text-dark font-heading q-my-none">
+              NUESTRO EQUIPO DE TRABAJO
+            </h2>
+            <p class="text-grey-7 text-body2 q-mt-xs" style="max-width: 600px; margin: 0 auto;">
+              Detrás de cada hamburguesa a la brasa y cada despacho rápido hay un equipo humano comprometido con la excelencia.
+            </p>
+          </div>
+
+          <div class="row q-col-gutter-lg">
+            <div
+              v-for="miembro in equipoTrabajo"
+              :key="miembro.id"
+              class="col-12 col-sm-6 col-md-3"
+            >
+              <q-card class="team-member-card text-center q-pa-md">
+                <q-avatar size="130px" class="q-mx-auto q-mb-md shadow-3" style="border: 3px solid #F5A623;">
+                  <img :src="miembro.foto" :alt="miembro.nombre" />
+                </q-avatar>
+                <!-- Nombre del miembro del equipo -->
+                <div class="text-subtitle1 text-weight-bolder text-dark font-heading">
+                  {{ miembro.nombre }}
+                </div>
+                <!-- Rol del miembro -->
+                <q-badge color="grey-10" text-color="amber-8" class="q-mt-xs q-px-sm text-weight-bold">
+                  {{ miembro.cargo }}
+                </q-badge>
+                <p class="text-grey-7 text-caption q-mt-sm q-mb-none" style="line-height: 1.4;">
+                  {{ miembro.bio || miembro.descripcion }}
+                </p>
+              </q-card>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIRECCIÓN, HORARIOS DE ATENCIÓN Y LÍNEAS DE PEDIDOS -->
+        <div class="q-my-xl">
+          <div class="text-center q-mb-lg">
+            <div class="text-gold font-script text-h5 q-mb-xs">Visítanos o Pide a Domicilio</div>
+            <h2 class="text-h3 text-weight-bolder text-dark font-heading q-my-none">
+              SEDES, HORARIOS Y LÍNEAS DE CONTACTO
+            </h2>
+          </div>
+
+          <div class="row q-col-gutter-lg">
+            <!-- Sedes y Horarios de Atención -->
+            <div
+              v-for="sede in sedesRestaurante"
+              :key="sede.id || sede.nombre"
+              class="col-12 col-md-4"
+            >
+              <q-card class="favorite-card full-height q-pa-md">
+                <div class="row items-center q-mb-sm">
+                  <q-avatar size="36px" color="amber-8" text-color="dark" class="q-mr-sm">
+                    <q-icon name="storefront" size="20px" />
+                  </q-avatar>
+                  <div>
+                    <div class="text-subtitle1 text-weight-bolder text-dark font-heading">
+                      {{ sede.nombre }}
+                    </div>
+                    <div class="text-caption text-gold font-script">{{ sede.ciudad || 'Bogotá' }}</div>
+                  </div>
+                </div>
+
+                <q-separator class="q-my-sm" />
+
+                <div class="text-body2 text-grey-8 q-gutter-y-xs">
+                  <div class="row items-center">
+                    <q-icon name="place" color="amber-9" size="18px" class="q-mr-xs" />
+                    <span><strong>Dirección:</strong> {{ sede.direccion }}</span>
+                  </div>
+                  <div class="row items-center">
+                    <q-icon name="phone" color="amber-9" size="18px" class="q-mr-xs" />
+                    <span><strong>Teléfono:</strong> {{ sede.telefono }}</span>
+                  </div>
+                  <div class="row items-center">
+                    <q-icon name="schedule" color="amber-9" size="18px" class="q-mr-xs" />
+                    <span><strong>Horario:</strong> {{ sede.horario || sede.horarios }}</span>
+                  </div>
+                </div>
+
+                <div class="q-mt-md">
+                  <q-btn
+                    unelevated
+                    dense
+                    class="btn-gold full-width"
+                    icon="lunch_dining"
+                    label="Pedir en esta Sede"
+                    @click="cambiarSeccion('hamburguesas')"
+                  />
+                </div>
+              </q-card>
+            </div>
+          </div>
+
+          <!-- TELÉFONO Y WHATSAPP DE PEDIDOS (LÍNEAS DIRECTAS) -->
+          <div class="q-mt-xl q-pa-lg bg-dark text-white rounded-borders border-subtle">
+            <div class="row items-center justify-between q-col-gutter-md">
+              <div class="col-12 col-md-7">
+                <div class="text-gold font-script text-h5">Central Única de Despacho</div>
+                <div class="text-h4 text-weight-bolder font-heading q-my-xs">
+                  ¿PREFIERES HACER TU PEDIDO DIRECTO?
+                </div>
+                <p class="text-grey-4 text-body2 q-mb-none">
+                  Atendemos pedidos telefónicos y por WhatsApp en tiempo real. Entregas promedio en 35 minutos sin costo de domicilio.
+                </p>
+              </div>
+              <div class="col-12 col-md-5 row items-center q-gutter-md justify-md-end">
+                <q-btn
+                  unelevated
+                  class="btn-whatsapp text-weight-bolder q-px-lg q-py-sm"
+                  icon="chat"
+                  label="WhatsApp Directo"
+                  :href="contactoInfo.whatsappUrl"
+                  target="_blank"
+                />
+                <q-btn
+                  outline
+                  class="btn-dark-outline text-weight-bolder q-px-lg q-py-sm"
+                  icon="phone"
+                  label="Llamar: (601) 745-9820"
+                  :href="'tel:' + contactoInfo.telefono"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. VISTA: MIS PEDIDOS (SEGUIMIENTO Y CALIFICACIÓN PERMANENTE) -->
+      <div v-else-if="seccionActiva === 'pedidos'" class="q-pa-md q-pa-md-xl max-w-7xl mx-auto">
+        <div class="row items-center justify-between q-mb-lg">
+          <div>
+            <div class="text-gold font-script text-h5">Seguimiento en Vivo</div>
+            <h1 class="text-h3 text-weight-bolder text-dark font-heading q-my-none">
+              MIS PEDIDOS
+            </h1>
+            <p class="text-grey-7 text-body2 q-mt-xs q-mb-none">
+              Consulta el estado de despacho de tus órdenes y califica el servicio una vez entregado.
+            </p>
+          </div>
+
+          <q-btn
+            unelevated
+            class="btn-gold"
+            icon="shopping_bag"
+            label="Hacer Nuevo Pedido"
+            @click="cambiarSeccion('hamburguesas')"
+          />
+        </div>
+
+        <!-- BANNER DE ESTADOS -->
+        <q-banner rounded class="bg-grey-10 text-white q-mb-lg border-subtle">
+          <template v-slot:avatar>
+            <q-icon name="schedule" color="amber-8" size="32px" />
+          </template>
+          <div class="text-body2">
+            <strong>Etapas de tu Pedido:</strong> 1. <strong>Recibido</strong> ➔ 2. <strong>En Preparación</strong> ➔ 3. <strong>Enviado</strong> ➔ 4. <strong>Entregado</strong>. Una vez guardada tu calificación, queda bloqueada permanentemente.
+          </div>
+        </q-banner>
+
+        <!-- Sin Pedidos -->
+        <div v-if="pedidos.length === 0" class="text-center q-pa-xl column flex-center bg-white rounded-borders shadow-1 border-subtle">
+          <q-icon name="moped" size="64px" color="grey-4" />
+          <div class="text-h5 text-weight-bolder text-dark font-heading q-mt-md">
+            No tienes pedidos activos
+          </div>
+          <p class="text-caption text-grey-6 q-mt-xs">
+            Explora nuestras especialidades para realizar tu primer pedido.
+          </p>
+          <q-btn class="btn-gold q-mt-md" label="Ver Menú de Hamburguesas" @click="cambiarSeccion('hamburguesas')" />
+        </div>
+
+        <!-- Listado de Pedidos -->
+        <div v-else class="q-gutter-y-lg">
+          <q-card
+            v-for="orden in pedidos"
+            :key="orden.id"
+            class="q-pa-md q-pa-md-lg bg-white shadow-2"
+            style="border-radius: 16px; border: 1px solid #e8e8e8;"
+          >
+            <!-- Cabecera de la Orden -->
+            <div class="row items-center justify-between q-mb-md">
+              <div class="row items-center">
+                <q-avatar size="38px" color="grey-10" text-color="amber-8" class="q-mr-sm">
+                  <q-icon name="receipt_long" size="22px" />
+                </q-avatar>
+                <div>
+                  <div class="text-subtitle1 text-weight-bolder text-dark font-heading">
+                    ORDEN #{{ orden.id }}
+                  </div>
+                  <div class="text-caption text-grey-6">
+                    Fecha: {{ orden.fecha }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="row items-center q-gutter-sm">
+                <q-chip
+                  :color="getColorEstado(orden.estado)"
+                  text-color="white"
+                  icon="sync"
+                  class="text-weight-bold"
+                >
+                  {{ orden.estado.toUpperCase() }}
+                </q-chip>
+                <!-- Botón para avanzar estado manualmente en la prueba -->
+                <q-btn
+                  v-if="orden.estado !== 'Entregado'"
+                  dense
+                  flat
+                  size="sm"
+                  color="grey-7"
+                  icon="fast_forward"
+                  label="Avanzar etapa"
+                  @click="avanzarEstadoPedido(orden.id)"
+                >
+                  <q-tooltip>Simular avance del repartidor</q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+
+            <!-- Stepper visual de las 4 etapas -->
+            <div class="q-my-lg q-px-sm">
+              <div class="row items-center justify-between relative-position">
+                <!-- Paso 1: Recibido -->
+                <div class="order-stepper-item" :class="getClasePaso(orden.estado, 'Recibido')">
+                  <div class="step-circle">
+                    <q-icon v-if="getClasePaso(orden.estado, 'Recibido') === 'completed'" name="check" size="20px" />
+                    <span v-else>1</span>
+                  </div>
+                  <div class="text-caption text-weight-bolder text-center q-mt-xs">Recibido</div>
+                </div>
+
+                <!-- Línea 1-2 -->
+                <q-separator class="col q-mx-xs" :color="getColorLinea(orden.estado, 1)" size="3px" />
+
+                <!-- Paso 2: En Preparación -->
+                <div class="order-stepper-item" :class="getClasePaso(orden.estado, 'En Preparación')">
+                  <div class="step-circle">
+                    <q-icon v-if="getClasePaso(orden.estado, 'En Preparación') === 'completed'" name="check" size="20px" />
+                    <span v-else>2</span>
+                  </div>
+                  <div class="text-caption text-weight-bolder text-center q-mt-xs">En Preparación</div>
+                </div>
+
+                <!-- Línea 2-3 -->
+                <q-separator class="col q-mx-xs" :color="getColorLinea(orden.estado, 2)" size="3px" />
+
+                <!-- Paso 3: Enviado -->
+                <div class="order-stepper-item" :class="getClasePaso(orden.estado, 'Enviado')">
+                  <div class="step-circle">
+                    <q-icon v-if="getClasePaso(orden.estado, 'Enviado') === 'completed'" name="check" size="20px" />
+                    <span v-else>3</span>
+                  </div>
+                  <div class="text-caption text-weight-bolder text-center q-mt-xs">Enviado</div>
+                </div>
+
+                <!-- Línea 3-4 -->
+                <q-separator class="col q-mx-xs" :color="getColorLinea(orden.estado, 3)" size="3px" />
+
+                <!-- Paso 4: Entregado -->
+                <div class="order-stepper-item" :class="getClasePaso(orden.estado, 'Entregado')">
+                  <div class="step-circle">
+                    <q-icon v-if="orden.estado === 'Entregado'" name="done_all" size="20px" />
+                    <span v-else>4</span>
+                  </div>
+                  <div class="text-caption text-weight-bolder text-center q-mt-xs">Entregado</div>
+                </div>
+              </div>
+            </div>
+
+            <q-separator class="q-my-md" />
+
+            <!-- Datos de Entrega y Productos -->
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7 text-weight-bolder q-mb-xs font-heading">
+                  INFORMACIÓN DE DESPACHO
+                </div>
+                <div class="text-body2 text-grey-9">
+                  <div><strong>Cliente:</strong> {{ orden.cliente }}</div>
+                  <div><strong>Teléfono:</strong> {{ orden.telefono }}</div>
+                  <div><strong>Dirección:</strong> {{ orden.direccion }} ({{ orden.ciudad }})</div>
+                  <div><strong>Método de Pago:</strong> {{ orden.metodoPago }}</div>
+                  <div v-if="orden.notas" class="text-caption text-grey-6 text-italic q-mt-xs">
+                    Notas: {{ orden.notas }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7 text-weight-bolder q-mb-xs font-heading">
+                  RESUMEN DE PRODUCTOS
+                </div>
+                <q-list dense separator>
+                  <q-item v-for="item in orden.items" :key="item.id" class="q-px-none">
+                    <q-item-section>
+                      <div class="text-body2 text-weight-bold text-dark">
+                        {{ item.cantidad }}x {{ item.nombre }}
+                      </div>
+                    </q-item-section>
+                    <q-item-section side>
+                      <div class="text-body2 text-weight-bolder text-dark">
+                        {{ formatCOP(item.precio * item.cantidad) }}
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+
+                <div class="row justify-between items-center q-mt-sm q-pt-xs border-subtle">
+                  <span class="text-subtitle1 text-weight-bolder text-dark">TOTAL PAGADO:</span>
+                  <span class="product-price text-h6">{{ formatCOP(orden.total) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MÓDULO DE CALIFICACIÓN (BLOQUEADA PERMANENTEMENTE UNA VEZ GUARDADA) -->
+            <div v-if="orden.estado === 'Entregado'" class="q-mt-lg q-pa-md bg-amber-1 rounded-borders border-subtle">
+              <!-- Calificación ya Guardada (Solo Lectura con Candado) -->
+              <div v-if="orden.calificacionGuardada">
+                <div class="row items-center justify-between q-mb-xs">
+                  <div class="row items-center text-positive text-weight-bolder">
+                    <q-icon name="lock" size="18px" class="q-mr-xs" />
+                    <span>CALIFICACIÓN GUARDADA PERMANENTEMENTE (BLOQUEADA)</span>
+                  </div>
+                  <q-badge color="positive">Registrada</q-badge>
+                </div>
+
+                <div class="row items-center q-gutter-sm q-mt-xs">
+                  <q-rating
+                    :model-value="orden.calificacion"
+                    size="28px"
+                    color="amber-9"
+                    icon="star"
+                    readonly
+                  />
+                  <span class="text-subtitle1 text-weight-bolder text-dark">
+                    {{ orden.calificacion }} de 5 estrellas
+                  </span>
+                </div>
+
+                <div v-if="orden.comentarioCalificacion" class="text-body2 text-grey-8 q-mt-sm text-italic">
+                  "{{ orden.comentarioCalificacion }}"
+                </div>
+              </div>
+
+              <!-- Formulario de Calificación Activo (Aún no guardado) -->
+              <div v-else>
+                <div class="text-subtitle2 text-weight-bolder text-dark q-mb-xs font-heading">
+                  ¿CÓMO ESTUVO TU EXPERIENCIA? ¡CALIFICA ESTE PEDIDO!
+                </div>
+                <div class="text-caption text-grey-8 q-mb-sm">
+                  Selecciona tu puntuación. Recuerda que una vez guardada, la calificación no podrá ser editada.
+                </div>
+
+                <div class="row items-center q-gutter-md q-mb-sm">
+                  <q-rating
+                    v-model="orden.calificacion"
+                    size="32px"
+                    color="amber-9"
+                    icon="star"
+                    icon-selected="star"
+                  />
+                  <span class="text-body2 text-weight-bold text-dark">
+                    {{ orden.calificacion ? `${orden.calificacion} estrellas` : 'Toca las estrellas para calificar' }}
+                  </span>
+                </div>
+
+                <q-input
+                  v-model="orden.comentarioCalificacion"
+                  outlined
+                  dense
+                  bg-color="white"
+                  placeholder="Escribe un comentario opcional sobre el sabor, temperatura o entrega..."
+                  class="q-mb-sm"
+                />
+
+                <q-btn
+                  unelevated
+                  class="btn-gold"
+                  icon="save"
+                  label="GUARDAR CALIFICACIÓN PERMANENTE"
+                  @click="guardarCalificacion(orden)"
+                />
+              </div>
+            </div>
+
+            <div v-else class="q-mt-md q-pa-sm bg-grey-2 rounded-borders text-caption text-grey-7 row items-center">
+              <q-icon name="info" size="18px" class="q-mr-xs text-amber-9" />
+              La opción de calificar se habilitará tan pronto el pedido llegue al estado "Entregado".
+            </div>
+          </q-card>
+        </div>
+      </div>
+    </q-page-container>
+
+    <!-- MODAL DE DETALLE DE PRODUCTO CON INGREDIENTES Y CANTIDAD -->
+    <q-dialog v-model="modalDetalle">
+      <q-card v-if="productoSeleccionado" style="width: 550px; max-width: 95vw; border-radius: 16px;">
+        <q-img
+          :src="productoSeleccionado.imagen"
+          :ratio="16/9"
+        >
+          <div class="absolute-top-right q-ma-sm">
+            <q-btn round dense flat icon="close" color="white" v-close-popup />
+          </div>
+          <div v-if="productoSeleccionado.esRecomendacionChef" class="absolute-bottom-left q-ma-sm chef-badge">
+            <q-icon name="restaurant" size="14px" class="q-mr-xs text-gold" />
+            RECOMENDACIÓN DEL CHEF
+          </div>
+        </q-img>
+
+        <q-card-section class="q-pa-lg">
+          <div class="row items-center justify-between">
+            <div class="text-caption text-weight-bold text-amber-9 text-uppercase">
+              {{ productoSeleccionado.categoria }}
+            </div>
+            <div class="product-price text-h5">
+              {{ formatCOP(productoSeleccionado.precio) }}
+            </div>
+          </div>
+
+          <div class="text-h5 text-weight-bolder text-dark font-heading q-mt-xs">
+            {{ productoSeleccionado.nombre }}
+          </div>
+
+          <p class="text-grey-8 text-body2 q-mt-sm">
+            {{ productoSeleccionado.descripcion }}
+          </p>
+
+          <!-- Ingredientes detallados -->
+          <div class="q-mt-md q-pa-md bg-grey-1 rounded-borders border-subtle">
+            <div class="text-caption text-weight-bolder text-dark font-heading q-mb-xs">
+              INGREDIENTES Y PREPARACIÓN:
+            </div>
+            <div class="text-body2 text-grey-8">
+              {{ productoSeleccionado.ingredientes }}
+            </div>
+          </div>
+
+          <!-- Selector de Cantidad -->
+          <div class="row items-center justify-between q-mt-lg">
+            <div class="text-subtitle2 text-weight-bold text-dark">
+              Cantidad:
+            </div>
+            <div class="row items-center q-gutter-sm">
+              <q-btn
+                round
+                dense
+                unelevated
+                color="grey-3"
+                text-color="dark"
+                icon="remove"
+                :disable="cantidadModal <= 1"
+                @click="cantidadModal--"
+              />
+              <span class="text-h6 text-weight-bolder text-dark q-px-sm">{{ cantidadModal }}</span>
+              <q-btn
+                round
+                dense
+                unelevated
+                color="grey-3"
+                text-color="dark"
+                icon="add"
+                @click="cantidadModal++"
+              />
+            </div>
+          </div>
+
+          <q-separator class="q-my-md" />
+
+          <!-- Botón de Confirmación -->
+          <div class="row items-center justify-between">
+            <div>
+              <div class="text-caption text-grey-6">Subtotal:</div>
+              <div class="product-price text-h6">
+                {{ formatCOP(productoSeleccionado.precio * cantidadModal) }}
+              </div>
+            </div>
+
+            <q-btn
+              unelevated
+              class="btn-gold q-px-lg text-weight-bolder font-heading"
+              icon="shopping_bag"
+              label="AÑADIR AL PEDIDO"
+              v-close-popup
+              @click="confirmarDetalleAgregar"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- DRAWER DEL CARRITO & FORMULARIO DE DESPACHO -->
+    <q-drawer
+      v-model="drawerCarrito"
+      side="right"
+      overlay
+      bordered
+      :width="440"
+      class="bg-white text-dark shadow-24"
+    >
+      <div class="column full-height">
+        <!-- Cabecera del Carrito -->
+        <div class="bg-dark text-white q-pa-md row items-center justify-between border-subtle">
+          <div class="row items-center">
+            <q-avatar size="34px" color="amber-8" text-color="dark" class="q-mr-sm">
+              <q-icon name="shopping_bag" size="20px" />
+            </q-avatar>
+            <div>
+              <div class="text-subtitle1 text-weight-bolder font-heading">TU PEDIDO</div>
+              <div class="text-caption text-gold">{{ contarItemsCarrito() }} productos agregados</div>
+            </div>
+          </div>
+          <q-btn flat round dense icon="close" color="white" @click="drawerCarrito = false" />
+        </div>
+
+        <!-- Contenido Scrollable -->
+        <div class="col scroll q-pa-md">
+          <!-- Carrito Vacío -->
+          <div v-if="carrito.length === 0" class="text-center q-pa-xl column flex-center">
+            <q-avatar size="64px" color="grey-2" text-color="grey-6" class="q-mb-md">
+              <q-icon name="remove_shopping_cart" size="32px" />
+            </q-avatar>
+            <div class="text-h6 text-weight-bolder text-dark font-heading">
+              Tu carrito está vacío
+            </div>
+            <p class="text-caption text-grey-6 q-mt-xs q-mb-md">
+              Agrega deliciosas especialidades de nuestras secciones para comenzar.
             </p>
             <q-btn
               unelevated
-              color="white"
-              text-color="dark"
-              class="text-weight-bold q-px-lg q-py-sm"
-              style="border-radius: 999px;"
-              to="/promociones"
-            >
-              MEJORAR PEDIDO
-              <q-icon name="arrow_forward" size="18px" class="q-ml-sm" />
-            </q-btn>
-          </div>
-
-          <div class="col-12 col-md-3 flex flex-center">
-            <div class="discount-circle flex flex-center column">
-              <span class="text-caption text-weight-bold text-dark" style="font-size: 0.75rem;">AHORRA HASTA</span>
-              <span class="text-h3 text-weight-bolder text-negative font-heading" style="line-height: 1;">20%</span>
-            </div>
-          </div>
-        </div>
-      </section>
-    </q-page-container>
-
-    <!-- Footer Idéntico a la Referencia -->
-    <footer class="bb-footer q-pt-xl q-pb-md text-white">
-      <div class="q-px-md q-px-md-xl">
-        <div class="row q-col-gutter-xl q-pb-xl">
-          <!-- Columna 1: Logo, Descripción & Redes -->
-          <div class="col-12 col-md-4">
-            <div class="row items-center q-mb-sm">
-              <div class="logo-circle q-mr-sm flex flex-center">
-                <q-icon name="lunch_dining" size="22px" color="white" />
-              </div>
-              <span class="text-h5 text-weight-bolder font-heading">
-                Burger <span class="text-negative">Bite</span>
-              </span>
-            </div>
-            <p class="text-grey-5 text-body2 q-mt-sm" style="max-width: 320px; line-height: 1.6;">
-              Hamburguesas deliciosas, preparadas con ingredientes de calidad y servidas con pasión en Colombia.
-            </p>
-            <div class="row q-gutter-sm q-mt-md">
-              <q-btn round flat dense size="sm" icon="facebook" class="bg-grey-9 text-white" />
-              <q-btn round flat dense size="sm" icon="photo_camera" class="bg-grey-9 text-white" />
-              <q-btn round flat dense size="sm" icon="share" class="bg-grey-9 text-white" />
-              <q-btn round flat dense size="sm" icon="videocam" class="bg-grey-9 text-white" />
-            </div>
-          </div>
-
-          <!-- Columna 2: Quick Links -->
-          <div class="col-6 col-sm-3 col-md-2">
-            <div class="text-subtitle2 text-weight-bolder text-uppercase q-mb-md letter-spacing-1">
-              ENLACES RÁPIDOS
-            </div>
-            <div class="column q-gutter-y-xs text-grey-4 text-caption">
-              <router-link to="/hamburguesas" class="footer-link">Inicio</router-link>
-              <router-link to="/promociones" class="footer-link">Menú</router-link>
-              <router-link to="/nosotros" class="footer-link">Ubicación</router-link>
-              <router-link to="/nosotros" class="footer-link">Nosotros</router-link>
-              <router-link to="/nosotros" class="footer-link">Contacto</router-link>
-            </div>
-          </div>
-
-          <!-- Columna 3: Categorías de Menú -->
-          <div class="col-6 col-sm-3 col-md-2">
-            <div class="text-subtitle2 text-weight-bolder text-uppercase q-mb-md letter-spacing-1">
-              MENÚ
-            </div>
-            <div class="column q-gutter-y-xs text-grey-4 text-caption">
-              <router-link to="/hamburguesas" class="footer-link">Hamburguesas</router-link>
-              <router-link to="/perros" class="footer-link">Perros calientes</router-link>
-              <router-link to="/pizzas" class="footer-link">Pizzas</router-link>
-              <router-link to="/bebidas" class="footer-link">Malteadas y bebidas</router-link>
-              <router-link to="/postres" class="footer-link">Postres</router-link>
-              <router-link to="/promociones" class="footer-link">Promociones</router-link>
-            </div>
-          </div>
-
-          <!-- Columna 4: Contacto & Suscripción -->
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle2 text-weight-bolder text-uppercase q-mb-md letter-spacing-1">
-              CONTÁCTANOS
-            </div>
-            <div class="column q-gutter-y-xs text-grey-4 text-caption q-mb-md">
-              <div class="row items-center">
-                <q-icon name="phone" class="q-mr-sm text-negative" size="16px" />
-                <span>+57 310 987 6543 / +57 (601) 745-9820</span>
-              </div>
-              <div class="row items-center">
-                <q-icon name="email" class="q-mr-sm text-negative" size="16px" />
-                <span>pedidos@burgerbite.com</span>
-              </div>
-              <div class="row items-center">
-                <q-icon name="place" class="q-mr-sm text-negative" size="16px" />
-                <span>Calle 85 # 14-25, Zona Rosa, Bogotá</span>
-              </div>
-            </div>
-
-            <!-- Stay in the loop box -->
-            <div class="newsletter-card q-pa-md rounded-borders bg-grey-10">
-              <div class="text-caption text-weight-bold text-white q-mb-xs">
-                ¡MANTENTE AL DÍA!
-              </div>
-              <div class="text-caption text-grey-5 q-mb-sm" style="font-size: 0.75rem;">
-                Suscríbete para recibir descuentos exclusivos y novedades deliciosas.
-              </div>
-              <div class="row q-gutter-xs">
-                <q-input
-                  v-model="emailSuscripcion"
-                  dark
-                  dense
-                  outlined
-                  placeholder="Tu correo electrónico"
-                  class="col bg-grey-9 text-white"
-                />
-                <q-btn
-                  unelevated
-                  class="btn-red-primary"
-                  label="SUSCRIBIRME"
-                  @click="suscribirseBoletin"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <q-separator dark class="q-my-md opacity-20" />
-
-        <div class="row items-center justify-between text-caption text-grey-6 q-pt-sm">
-          <div>© 2026 Burger Bite. Todos los derechos reservados. Menú digital y domicilios.</div>
-          <div class="row q-gutter-md">
-            <span>Política de privacidad</span>
-            <span>Términos de servicio</span>
-            <span>Cookies</span>
-          </div>
-        </div>
-      </div>
-    </footer>
-
-    <!-- DIÁLOGO DEL CARRITO & CHECKOUT (Con Marca select, Modelo separado, Fecha automática no editable, Estado inicial Recibido, Abono con caja dedicada) -->
-    <q-dialog v-model="state.isCartDrawerOpen" position="right">
-      <q-card style="width: 440px; max-width: 95vw; height: 100%; display: flex; flex-direction: column;">
-        <!-- Cabecera del Carrito -->
-        <q-card-section class="row items-center justify-between bg-dark text-white q-py-md">
-          <div class="row items-center">
-            <q-icon name="shopping_cart" size="24px" class="q-mr-sm text-negative" />
-            <span class="text-h6 text-weight-bolder font-heading">TU PEDIDO ACTUAL</span>
-          </div>
-          <q-btn flat round dense icon="close" color="white" v-close-popup />
-        </q-card-section>
-
-        <!-- Lista de Productos en el Carrito -->
-        <q-card-section class="col overflow-auto q-pa-md">
-          <div v-if="state.cart.length === 0" class="text-center q-pa-xl column flex-center">
-            <q-icon name="remove_shopping_cart" size="64px" color="grey-4" />
-            <div class="text-h6 text-grey-7 q-mt-md font-heading">Tu carrito está vacío</div>
-            <p class="text-caption text-grey-6 q-mt-xs">
-              Explora nuestras categorías y agrega tus hamburguesas o combos favoritos.
-            </p>
-            <q-btn
-              class="btn-red-primary q-mt-md"
+              class="btn-gold"
               label="Ver Hamburguesas"
-              to="/hamburguesas"
-              v-close-popup
+              @click="drawerCarrito = false; cambiarSeccion('hamburguesas')"
             />
           </div>
 
+          <!-- Items en el Carrito -->
           <div v-else>
             <q-list separator>
               <q-item
-                v-for="item in state.cart"
+                v-for="item in carrito"
                 :key="item.id"
                 class="q-py-md q-px-none"
               >
@@ -422,12 +1265,9 @@
                 </q-item-section>
 
                 <q-item-section>
-                  <div class="text-subtitle2 text-weight-bolder text-dark">{{ item.nombre }}</div>
-                  <div class="text-caption text-negative text-weight-bold">
+                  <div class="text-subtitle2 text-weight-bolder text-dark font-heading">{{ item.nombre }}</div>
+                  <div class="text-caption text-gold text-weight-bold">
                     {{ formatCOP(item.precio) }} c/u
-                  </div>
-                  <div v-if="item.notes" class="text-caption text-grey-7 text-italic">
-                    Nota: {{ item.notes }}
                   </div>
                 </q-item-section>
 
@@ -440,7 +1280,7 @@
                       size="sm"
                       icon="remove"
                       color="dark"
-                      @click="updateCartQuantity(item.id, -1)"
+                      @click="modificarCantidadCarrito(item.id, -1)"
                     />
                     <span class="text-weight-bolder q-px-xs text-body2">{{ item.cantidad }}</span>
                     <q-btn
@@ -450,7 +1290,7 @@
                       size="sm"
                       icon="add"
                       color="dark"
-                      @click="updateCartQuantity(item.id, 1)"
+                      @click="modificarCantidadCarrito(item.id, 1)"
                     />
                     <q-btn
                       flat
@@ -459,7 +1299,7 @@
                       size="sm"
                       icon="delete_outline"
                       color="grey-6"
-                      @click="removeFromCart(item.id)"
+                      @click="eliminarDelCarrito(item.id)"
                     />
                   </div>
                   <div class="text-caption text-weight-bolder text-right text-dark q-mt-xs">
@@ -471,481 +1311,591 @@
 
             <q-separator class="q-my-md" />
 
-            <!-- Formulario de Pedido / Registro con Requisitos Obligatorios -->
+            <!-- Formulario de Entrega Obligatorio -->
             <div class="text-subtitle2 text-weight-bolder text-dark q-mb-sm font-heading">
-              DATOS DE ENTREGA Y REGISTRO
+              INFORMACIÓN DE ENTREGA (CAMPOS OBLIGATORIOS)
             </div>
 
             <div class="q-gutter-y-sm">
-              <!-- Fecha automática y no editable -->
               <q-input
                 v-model="formularioPedido.fecha"
-                label="Fecha del Pedido (Automática - No editable)"
+                label="Fecha de la Orden (Automática - No editable)"
                 dense
                 outlined
                 readonly
+                disable
                 bg-color="grey-2"
               >
                 <template v-slot:prepend>
-                  <q-icon name="event" color="negative" />
+                  <q-icon name="event" color="amber-9" />
                 </template>
               </q-input>
 
-              <!-- Nombre del cliente -->
               <q-input
                 v-model="formularioPedido.cliente"
-                label="Nombre del Cliente"
+                label="Nombre Completo *"
                 dense
                 outlined
-                placeholder="Ej. Juan Pérez"
-              />
+                placeholder="Ingresa tu nombre y apellido"
+                :error="erroresFormulario.cliente"
+                error-message="El nombre completo es obligatorio"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="person" color="grey-7" />
+                </template>
+              </q-input>
 
-              <!-- Teléfono -->
               <q-input
                 v-model="formularioPedido.telefono"
-                label="Teléfono / WhatsApp"
+                label="Teléfono Celular *"
                 dense
                 outlined
                 placeholder="Ej. 312 345 6789"
-              />
+                :error="erroresFormulario.telefono"
+                error-message="El teléfono celular es obligatorio"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="phone" color="grey-7" />
+                </template>
+              </q-input>
 
-              <!-- Dirección -->
               <q-input
                 v-model="formularioPedido.direccion"
-                label="Dirección de Envío / Mesa"
+                label="Dirección de Entrega *"
                 dense
                 outlined
-                placeholder="Ej. Calle 85 # 14-25 Apt 401"
-              />
+                placeholder="Ej. Calle 85 # 14-25 Apto 401"
+                :error="erroresFormulario.direccion"
+                error-message="La dirección de entrega es obligatoria"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="home" color="grey-7" />
+                </template>
+              </q-input>
 
-              <!-- La MARCA debe ser un select (dropdown) -->
+              <q-input
+                v-model="formularioPedido.ciudad"
+                label="Ciudad / Sector *"
+                dense
+                outlined
+                placeholder="Ej. Bogotá - Zona Rosa"
+                :error="erroresFormulario.ciudad"
+                error-message="La ciudad o sector es obligatorio"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="place" color="grey-7" />
+                </template>
+              </q-input>
+
               <q-select
-                v-model="formularioPedido.marca"
-                :options="opcionesMarcas"
-                label="Marca / Sede Comercial (Select)"
+                v-model="formularioPedido.metodoPago"
+                :options="['Efectivo contra entrega', 'Tarjeta Débito / Crédito', 'Transferencia Nequi / Daviplata']"
+                label="Método de Pago *"
                 dense
                 outlined
               >
                 <template v-slot:prepend>
-                  <q-icon name="store" color="negative" />
+                  <q-icon name="payments" color="grey-7" />
                 </template>
               </q-select>
 
-              <!-- Le falta el campo MODELO (campo diferente de marca) -->
               <q-input
-                v-model="formularioPedido.modelo"
-                label="Modelo / Tipo de Entrega (Campo separado)"
+                v-model="formularioPedido.notas"
+                label="Observaciones del Pedido (Opcional)"
                 dense
                 outlined
-                placeholder="Ej. Pedido Gourmet Domicilio / Mesa VIP"
+                type="textarea"
+                rows="2"
+                placeholder="Ej. Sin cebolla, tocar el timbre..."
               />
-
-              <!-- Método de Pago -->
-              <q-select
-                v-model="formularioPedido.metodoPago"
-                :options="['Efectivo', 'Tarjeta Débito / Crédito', 'Transferencia Nequi / Daviplata', 'Abono / Anticipo']"
-                label="Método de Pago"
-                dense
-                outlined
-              />
-
-              <!-- Cuando selecciono ABONO tengo una caja para poner el valor del abono -->
-              <div v-if="formularioPedido.metodoPago === 'Abono / Anticipo'" class="bg-red-1 q-pa-sm rounded-borders">
-                <div class="text-caption text-weight-bold text-negative q-mb-xs">
-                  Ingrese el valor del Abono / Anticipo:
-                </div>
-                <q-input
-                  v-model.number="formularioPedido.abono"
-                  type="number"
-                  label="Valor del Abono (COP)"
-                  dense
-                  outlined
-                  bg-color="white"
-                  prefix="$"
-                  :hint="`Saldo restante por cobrar: ${formatCOP(Math.max(0, cartTotal - (formularioPedido.abono || 0)))}`"
-                />
-              </div>
-
-              <!-- Estado inicial: RECIBIDO (Informativo en registro inicial) -->
-              <div class="row items-center justify-between bg-grey-2 q-pa-sm rounded-borders">
-                <span class="text-caption text-grey-8 text-weight-medium">Estado inicial del pedido:</span>
-                <q-badge color="negative" class="text-weight-bold">
-                  RECIBIDO
-                </q-badge>
-              </div>
-
-              <!-- Nota: La calificación NO va en el registro inicial, va cuando pase a entregado -->
-              <div class="text-caption text-grey-6 text-italic" style="font-size: 0.78rem;">
-                ℹ La evaluación y calificación del cliente se habilitará una vez el pedido pase al estado "Entregado".
-              </div>
             </div>
           </div>
-        </q-card-section>
+        </div>
 
-        <!-- Total y Confirmación de Pedido -->
-        <q-card-section v-if="state.cart.length > 0" class="bg-grey-1 border-top q-pa-md">
+        <!-- Pie del Carrito: Totales y Botón de Confirmación -->
+        <div v-if="carrito.length > 0" class="bg-grey-1 q-pa-md border-subtle">
+          <div class="row items-center justify-between q-mb-xs text-body2 text-grey-8">
+            <span>Subtotal:</span>
+            <span class="text-weight-bold">{{ formatCOP(obtenerTotalCarrito()) }}</span>
+          </div>
+          <div class="row items-center justify-between q-mb-xs text-body2 text-grey-8">
+            <span>Costo de Domicilio:</span>
+            <span class="text-weight-bold text-positive">¡GRATIS!</span>
+          </div>
+          <q-separator class="q-my-sm" />
           <div class="row items-center justify-between q-mb-md">
-            <span class="text-subtitle1 text-weight-bold text-dark">TOTAL DEL PEDIDO:</span>
-            <span class="price-tag">{{ formatCOP(cartTotal) }}</span>
+            <span class="text-subtitle1 text-weight-bolder text-dark font-heading">TOTAL A PAGAR:</span>
+            <span class="product-price text-h5">{{ formatCOP(obtenerTotalCarrito()) }}</span>
           </div>
 
           <q-btn
-            class="btn-red-primary full-width q-py-sm"
-                  label="FINALIZAR SOLICITUD"
+            unelevated
+            class="btn-gold full-width q-py-sm text-weight-bolder font-heading text-body1"
             icon="check_circle"
-            @click="confirmarPedido"
+            label="CONFIRMAR Y DESPACHAR PEDIDO"
+            @click="despacharPedido"
           />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
 
-    <!-- DIÁLOGO DE GESTIÓN DE PEDIDOS, ESTADOS (Recibido -> Entregado), ABONO, EVALUACIÓN CLIENTE Y PDF -->
-    <q-dialog v-if="false" v-model="state.isOrdersModalOpen">
-      <q-card style="width: 850px; max-width: 95vw; border-radius: 20px;">
-        <q-card-section class="row items-center justify-between bg-dark text-white q-py-md">
-          <div class="row items-center">
-            <q-icon name="receipt_long" size="24px" class="q-mr-sm text-negative" />
-            <div>
-              <div class="text-h6 text-weight-bolder font-heading">GESTIÓN DE PEDIDOS Y REPORTES</div>
-              <div class="text-caption text-grey-4">Control de estados, abonos, calificación de entrega y exportación PDF</div>
+          <div class="text-center text-caption text-grey-6 q-mt-xs">
+            Pago seguro al recibir o transferir. Sin anticipos.
+          </div>
+        </div>
+      </div>
+    </q-drawer>
+
+    <!-- FOOTER DARK ELEGANTE -->
+    <footer class="bf-footer q-py-xl q-px-md q-px-md-xl">
+      <div class="max-w-7xl mx-auto">
+        <div class="row q-col-gutter-xl justify-between">
+          <!-- Columna 1: Marca -->
+          <div class="col-12 col-md-4">
+            <div class="row items-center q-mb-md">
+              <q-avatar size="36px" color="amber-8" text-color="dark" class="q-mr-sm">
+                <q-icon name="lunch_dining" size="22px" />
+              </q-avatar>
+              <span class="text-h6 text-weight-bolder text-white font-heading">
+                BURGER <span class="text-gold">FACTORY</span>
+              </span>
+            </div>
+            <p class="text-grey-5 text-body2" style="line-height: 1.6;">
+              Parrilla artesanal auténtica, carnes 100% Angus colombianas, masas maduradas a la piedra y los mejores postres. Despachos express directos a tu puerta.
+            </p>
+            <div class="text-gold font-script text-h6">
+              Pasión por la parrilla desde 2016
             </div>
           </div>
-          <q-btn flat round dense icon="close" color="white" v-close-popup />
-        </q-card-section>
 
-        <q-card-section class="q-pa-md overflow-auto" style="max-height: 70vh;">
-          <div v-if="state.orders.length === 0" class="text-center q-pa-xl">
-            <q-icon name="inventory_2" size="48px" color="grey-4" />
-            <div class="text-h6 text-grey-7 q-mt-sm font-heading">No hay pedidos registrados</div>
+          <!-- Columna 2: Secciones del Menú -->
+          <div class="col-6 col-sm-4 col-md-2">
+            <div class="text-subtitle2 text-weight-bolder text-white q-mb-md font-heading">
+              SECCIONES DE COMIDA
+            </div>
+            <div class="column q-gutter-y-sm text-caption">
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('hamburguesas')">Hamburguesas (5)</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('perros')">Perros Calientes (5)</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('pizzas')">Pizzas a la Piedra (5)</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('bebidas')">Bebidas y Malteadas (5)</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('postres')">Postres Caseros (5)</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('promociones')">Super Combos (5)</a>
+            </div>
           </div>
 
-          <div v-else class="q-gutter-y-md">
-            <q-card
-              v-for="order in state.orders"
-              :key="order.id"
-              class="q-pa-md"
-              bordered
-              :class="{ 'bg-grey-1': order.estado === 'Entregado' }"
-              style="border-radius: 14px;"
-            >
-              <!-- Cabecera de la orden -->
-              <div class="row items-center justify-between q-mb-sm">
-                <div>
-                  <span class="text-subtitle1 text-weight-bolder text-dark font-heading q-mr-sm">
-                    Pedido #{{ order.id }}
-                  </span>
-                  <q-badge
-                    :color="getEstadoBadgeColor(order.estado)"
-                    class="text-weight-bold q-pa-xs q-px-sm"
-                  >
-                    {{ order.estado.toUpperCase() }}
-                  </q-badge>
-                </div>
-
-                <div class="text-caption text-grey-7">
-                  <q-icon name="schedule" class="q-mr-xs" />
-                  <strong>Fecha (automática):</strong> {{ order.fecha }}
-                </div>
-              </div>
-
-              <!-- Detalles del Cliente, Marca y Modelo -->
-              <div class="row q-col-gutter-sm text-body2 q-mb-sm">
-                <div class="col-12 col-sm-6">
-                  <div><strong>Cliente:</strong> {{ order.cliente }}</div>
-                  <div><strong>Teléfono:</strong> {{ order.telefono }}</div>
-                  <div><strong>Dirección:</strong> {{ order.direccion }}</div>
-                </div>
-                <div class="col-12 col-sm-6">
-                  <div><strong>Marca (Sede):</strong> {{ order.marca }}</div>
-                  <div><strong>Modelo:</strong> {{ order.modelo }}</div>
-                  <div><strong>Método de Pago:</strong> {{ order.metodoPago }}</div>
-                  <div v-if="order.abono > 0" class="text-negative text-weight-bold">
-                    Abono: {{ formatCOP(order.abono) }} | Saldo: {{ formatCOP(order.saldoPendiente) }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Ítems del Pedido -->
-              <div class="bg-grey-2 q-pa-sm rounded-borders q-mb-sm">
-                <div class="text-caption text-weight-bold text-dark q-mb-xs">Productos incluidos:</div>
-                <div class="row q-gutter-x-md text-caption text-grey-8">
-                  <span v-for="item in order.items" :key="item.id">
-                    • {{ item.cantidad }}x {{ item.nombre }} ({{ formatCOP(item.precio * item.cantidad) }})
-                  </span>
-                </div>
-                <div class="text-right text-subtitle2 text-weight-bolder text-negative q-mt-xs">
-                  Total: {{ formatCOP(order.total) }}
-                </div>
-              </div>
-
-              <!-- Sección de Calificación del Cliente (Aparece SOLO cuando está Entregado) -->
-              <div v-if="order.estado === 'Entregado'" class="bg-amber-1 q-pa-sm rounded-borders q-mb-sm border-amber">
-                <div class="row items-center justify-between">
-                  <div class="text-caption text-weight-bold text-dark">
-                    ⭐ Evaluación del Cliente (Habilitada por estar Entregado):
-                  </div>
-                  <q-rating
-                    v-model="order.calificacion"
-                    size="20px"
-                    color="amber-9"
-                    icon="star_border"
-                    icon-selected="star"
-                    @update:model-value="guardarCalificacion(order)"
-                  />
-                </div>
-                <div class="row q-col-gutter-xs q-mt-xs">
-                  <q-input
-                    v-model="order.comentarioCalificacion"
-                    dense
-                    outlined
-                    bg-color="white"
-                    placeholder="Escribe tu opinión sobre el pedido y entrega..."
-                    class="col"
-                  />
-                  <q-btn
-                    dense
-                    color="amber-10"
-                    icon="check"
-                    label="Calificar"
-                    class="q-px-sm text-weight-bold"
-                    @click="guardarCalificacion(order)"
-                  />
-                </div>
-              </div>
-
-              <!-- Acciones del Pedido -->
-              <div class="row items-center justify-between q-mt-md">
-                <!-- Selector de cambio de estado -->
-                <div class="row items-center q-gutter-sm">
-                  <span class="text-caption text-weight-bold text-dark">Cambiar Estado:</span>
-                  <q-select
-                    v-model="order.estado"
-                    :options="['Recibido', 'En Preparación', 'En Camino', 'Entregado']"
-                    dense
-                    outlined
-                    :disable="order.estado === 'Entregado'"
-                    style="min-width: 150px;"
-                    @update:model-value="(val) => onCambioEstado(order, val)"
-                  />
-                  <span v-if="order.estado === 'Entregado'" class="text-caption text-negative text-italic">
-                    (Bloqueado: Un registro en estado entregado no se puede editar ni eliminar)
-                  </span>
-                </div>
-
-                <!-- Botones de Acción: Exportar PDF y Eliminar -->
-                <div class="row q-gutter-xs">
-                  <!-- Botón Exportar PDF -->
-                  <q-btn
-                    outline
-                    color="negative"
-                    icon="picture_as_pdf"
-                    label="Descargar PDF"
-                    size="sm"
-                    class="text-weight-bold"
-                    @click="descargarReportePDF(order)"
-                  />
-
-                  <!-- Botón Eliminar (Deshabilitado si estado === Entregado) -->
-                  <q-btn
-                    flat
-                    round
-                    color="negative"
-                    icon="delete"
-                    size="sm"
-                    :disable="order.estado === 'Entregado'"
-                    @click="confirmarEliminarOrden(order.id)"
-                  >
-                    <q-tooltip v-if="order.estado === 'Entregado'">
-                      No se puede eliminar un pedido ya entregado
-                    </q-tooltip>
-                    <q-tooltip v-else>Eliminar Pedido</q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
-            </q-card>
+          <!-- Columna 3: Conócenos -->
+          <div class="col-6 col-sm-4 col-md-2">
+            <div class="text-subtitle2 text-weight-bolder text-white q-mb-md font-heading">
+              CONÓCENOS
+            </div>
+            <div class="column q-gutter-y-sm text-caption">
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('hamburguesas')">Carta Gastronómica</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('nosotros')">Nuestra Historia</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('nosotros')">Equipo de Cocina</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('nosotros')">Sedes y Horarios</a>
+              <a href="javascript:void(0)" class="footer-link" @click="cambiarSeccion('pedidos')">Mis Pedidos en Vivo</a>
+            </div>
           </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+
+          <!-- Columna 4: Contacto y WhatsApp -->
+          <div class="col-12 col-sm-4 col-md-4">
+            <div class="text-subtitle2 text-weight-bolder text-white q-mb-md font-heading">
+              LÍNEAS DE ATENCIÓN Y DOMICILIOS
+            </div>
+            <div class="column q-gutter-y-sm text-caption text-grey-4">
+              <div class="row items-center">
+                <q-icon name="phone" color="amber-8" size="18px" class="q-mr-sm" />
+                <span>Central de Pedidos: <strong>{{ contactoInfo.telefono }}</strong></span>
+              </div>
+              <div class="row items-center">
+                <q-icon name="chat" color="positive" size="18px" class="q-mr-sm" />
+                <span>WhatsApp: <strong>{{ contactoInfo.whatsapp }}</strong></span>
+              </div>
+              <div class="row items-center">
+                <q-icon name="schedule" color="amber-8" size="18px" class="q-mr-sm" />
+                <span>Horario: Dom - Jue 11:30 AM a 10:30 PM | Vie - Sáb hasta 12:00 AM</span>
+              </div>
+            </div>
+
+            <div class="q-mt-md">
+              <q-btn
+                unelevated
+                dense
+                class="btn-whatsapp full-width text-weight-bold"
+                icon="chat"
+                label="Escríbenos por WhatsApp"
+                :href="contactoInfo.whatsappUrl"
+                target="_blank"
+              />
+            </div>
+          </div>
+        </div>
+
+        <q-separator dark class="q-my-lg opacity-20" />
+
+        <div class="row items-center justify-between text-caption text-grey-6">
+          <div>
+            © {{ new Date().getFullYear() }} Burger Factory. Menú Digital de Comidas Rápidas. Todos los derechos reservados.
+          </div>
+          <div class="row items-center q-gutter-md">
+            <span>Carne 100% Angus Certificada</span>
+            <span>Despacho Rápido y Seguro</span>
+          </div>
+        </div>
+      </div>
+    </footer>
   </q-layout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+// Únicamente ref() según requerimiento estricto (PROHIBIDO: computed, watch, Pinia, Vue Router)
+import { ref } from 'vue'
+// Persistencia únicamente con useLocalStorage de @vueuse/core
+import { useLocalStorage } from '@vueuse/core'
 import { useQuasar } from 'quasar'
+
+// Importación de datos estáticos
 import {
-  state,
-  cartCount,
-  cartTotal,
-  formatCOP,
-  getNowFormatted,
-  removeFromCart,
-  clearCart,
-  updateCartQuantity
-} from './store.js'
+  CATEGORIAS_CONFIG,
+  CATALOGO_PRODUCTOS,
+  EQUIPO_TRABAJO,
+  SEDES_RESTAURANTE,
+  CONTACTO_GENERAL
+} from './data.js'
 
 const $q = useQuasar()
-const route = useRoute()
 
-const menuMovil = ref(false)
-const emailSuscripcion = ref('')
+// Persistencia de datos con useLocalStorage
+const carrito = useLocalStorage('bf_carrito_persisted', [])
+const pedidos = useLocalStorage('bf_pedidos_persisted', [
+  {
+    id: 1042,
+    fecha: '15/09/2026, 11:30 am',
+    cliente: 'Juan Camilo Pérez',
+    telefono: '310 987 6543',
+    direccion: 'Carrera 15 # 88-20 Apto 502',
+    ciudad: 'Bogotá - Zona Rosa',
+    metodoPago: 'Efectivo contra entrega',
+    notas: 'Sin cebolla en la Monster Burger por favor.',
+    items: [
+      { id: 'bf-h2', nombre: 'Monster Factory Burger (Recomendación del Chef)', precio: 32900, cantidad: 1 },
+      { id: 'bf-b1', nombre: 'Malteada Belga Chocolate Fudge', precio: 15900, cantidad: 1 }
+    ],
+    total: 48800,
+    estado: 'Enviado',
+    calificacion: 0,
+    comentarioCalificacion: '',
+    calificacionGuardada: false
+  }
+])
 
-const opcionesMarcas = [
-  'Burger Bite - Zona Rosa',
-  'Burger Bite - Chapinero Central',
-  'Burger Bite - Usaquén Parque',
-  'Burger Bite - Salitre Plaza'
-]
+// Se restablece la vista "Inicio" como bienvenida y carta digital
+const seccionActiva = useLocalStorage('bf_seccion_activa_left', 'inicio')
+
+// Estados locales con ref()
+const drawerLeft = ref(false)
+const drawerCarrito = ref(false)
+const modalDetalle = ref(false)
+const productoSeleccionado = ref(null)
+const cantidadModal = ref(1)
+
+const equipoTrabajo = ref(EQUIPO_TRABAJO)
+const sedesRestaurante = ref(SEDES_RESTAURANTE)
+const contactoInfo = ref(CONTACTO_GENERAL)
 
 const formularioPedido = ref({
-  fecha: getNowFormatted(), // Fecha automática no editable
+  fecha: obtenerFechaActual(),
   cliente: '',
   telefono: '',
   direccion: '',
-  marca: 'Burger Bite - Zona Rosa', // Select de marca
-  modelo: 'Pedido Estándar Gourmet', // Modelo separado
-  metodoPago: 'Efectivo',
-  abono: 0,
+  ciudad: '',
+  metodoPago: 'Efectivo contra entrega',
   notas: ''
 })
 
-const esVistaInicio = computed(() => {
-  return route.path === '/' || route.path === '/hamburguesas'
+const erroresFormulario = ref({
+  cliente: false,
+  telefono: false,
+  direccion: false,
+  ciudad: false
 })
 
-function iniciarPedidoDirecto() {
-  state.isCartDrawerOpen = true
-  formularioPedido.value.fecha = getNowFormatted()
+// Funciones normales
+function cambiarSeccion(seccion) {
+  seccionActiva.value = seccion
+  drawerLeft.value = false // El menú se cierra automáticamente al hacer clic en cualquier sección
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-function confirmarPedido() {
-  if (state.cart.length === 0) {
-    $q.notify({
-      type: 'warning',
-      message: 'El carrito está vacío. Agrega al menos un producto.',
-      icon: 'warning'
-    })
-    return
+function esCategoriaActiva(seccion) {
+  return ['hamburguesas', 'perros', 'pizzas', 'bebidas', 'postres', 'promociones'].includes(seccion)
+}
+
+function obtenerTituloSeccionActiva(seccion) {
+  switch (seccion) {
+    case 'inicio': return 'Inicio - Menú Digital'
+    case 'hamburguesas': return 'Sección de Hamburguesas'
+    case 'perros': return 'Sección de Perros Calientes'
+    case 'pizzas': return 'Sección de Pizzas a la Piedra'
+    case 'bebidas': return 'Sección de Bebidas & Malteadas'
+    case 'postres': return 'Sección de Postres Caseros'
+    case 'promociones': return 'Sección de Promociones & Combos'
+    case 'nosotros': return 'Sobre Nosotros & Sedes'
+    case 'pedidos': return 'Mis Pedidos & Despacho'
+    default: return 'Menú Digital de Comidas Rápidas'
   }
-
-  clearCart()
-  state.isCartDrawerOpen = false
 }
 
-function suscribirseBoletin() {
-  if (!emailSuscripcion.value || !emailSuscripcion.value.includes('@')) {
-    $q.notify({
-      type: 'warning',
-      message: 'Por favor ingresa un correo electrónico válido',
-      icon: 'mail'
+function obtenerConfigCategoria(catId) {
+  return CATEGORIAS_CONFIG[catId] || CATEGORIAS_CONFIG.hamburguesas
+}
+
+function obtenerProductosDeCategoria(catId) {
+  return CATALOGO_PRODUCTOS.filter(p => p.categoriaId === catId)
+}
+
+function formatCOP(valor) {
+  if (typeof valor !== 'number') return '$0'
+  return '$' + valor.toLocaleString('es-CO')
+}
+
+function getClaseTag(etiqueta) {
+  switch (etiqueta) {
+    case 'Más pedido': return 'tag-mas-pedido'
+    case 'Nuevo': return 'tag-nuevo'
+    case 'Picante': return 'tag-picante'
+    case 'Vegetariano': return 'tag-vegetariano'
+    case 'Super Promo':
+    case 'Para 2':
+    case 'Familiar': return 'tag-promo'
+    default: return 'tag-default'
+  }
+}
+
+function getColorEtiqueta(etiqueta) {
+  switch (etiqueta) {
+    case 'Más pedido': return 'amber-9'
+    case 'Nuevo': return 'blue-7'
+    case 'Picante': return 'deep-orange-7'
+    case 'Vegetariano': return 'positive'
+    case 'Super Promo': return 'purple-7'
+    case 'Para 2': return 'teal-7'
+    case 'Familiar': return 'indigo-7'
+    case 'Sin Alcohol': return 'cyan-7'
+    case 'Caliente': return 'brown-7'
+    default: return 'grey-8'
+  }
+}
+
+function contarItemsCarrito() {
+  let count = 0
+  for (let i = 0; i < carrito.value.length; i++) {
+    count += (carrito.value[i].cantidad || 1)
+  }
+  return count
+}
+
+function obtenerTotalCarrito() {
+  let total = 0
+  for (let i = 0; i < carrito.value.length; i++) {
+    total += ((carrito.value[i].precio || 0) * (carrito.value[i].cantidad || 1))
+  }
+  return total
+}
+
+function agregarAlCarrito(producto, cantidad = 1) {
+  const index = carrito.value.findIndex(item => item.id === producto.id)
+  if (index !== -1) {
+    carrito.value[index].cantidad += cantidad
+  } else {
+    carrito.value.push({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+      cantidad: cantidad
     })
-    return
   }
 
   $q.notify({
     type: 'positive',
-    message: '¡Gracias por suscribirte al boletín de Burger Bite!',
-    caption: 'Recibirás un cupón de 15% de descuento en tu correo.',
-    icon: 'celebration'
+    message: `¡${producto.nombre} añadido a tu pedido!`,
+    icon: 'check_circle',
+    timeout: 2200,
+    position: 'top-right'
   })
-  emailSuscripcion.value = ''
+}
+
+function modificarCantidadCarrito(id, delta) {
+  const index = carrito.value.findIndex(item => item.id === id)
+  if (index !== -1) {
+    carrito.value[index].cantidad += delta
+    if (carrito.value[index].cantidad <= 0) {
+      carrito.value.splice(index, 1)
+    }
+  }
+}
+
+function eliminarDelCarrito(id) {
+  const index = carrito.value.findIndex(item => item.id === id)
+  if (index !== -1) {
+    carrito.value.splice(index, 1)
+  }
+}
+
+function abrirModalDetalle(producto) {
+  productoSeleccionado.value = producto
+  cantidadModal.value = 1
+  modalDetalle.value = true
+}
+
+function confirmarDetalleAgregar() {
+  if (!productoSeleccionado.value) return
+  agregarAlCarrito(productoSeleccionado.value, cantidadModal.value)
+}
+
+function obtenerFechaActual() {
+  const now = new Date()
+  const d = String(now.getDate()).padStart(2, '0')
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const y = now.getFullYear()
+  let h = now.getHours()
+  const min = String(now.getMinutes()).padStart(2, '0')
+  const ampm = h >= 12 ? 'pm' : 'am'
+  h = h % 12
+  h = h ? h : 12
+  return `${d}/${m}/${y}, ${h}:${min} ${ampm}`
+}
+
+function despacharPedido() {
+  erroresFormulario.value.cliente = !formularioPedido.value.cliente.trim()
+  erroresFormulario.value.telefono = !formularioPedido.value.telefono.trim()
+  erroresFormulario.value.direccion = !formularioPedido.value.direccion.trim()
+  erroresFormulario.value.ciudad = !formularioPedido.value.ciudad.trim()
+
+  if (
+    erroresFormulario.value.cliente ||
+    erroresFormulario.value.telefono ||
+    erroresFormulario.value.direccion ||
+    erroresFormulario.value.ciudad
+  ) {
+    $q.notify({
+      type: 'warning',
+      message: 'Por favor completa todos los campos obligatorios de entrega.',
+      icon: 'warning',
+      position: 'top-right',
+      timeout: 3000
+    })
+    return
+  }
+
+  formularioPedido.value.fecha = obtenerFechaActual()
+
+  const nuevaOrden = {
+    id: Math.floor(1000 + Math.random() * 9000),
+    fecha: formularioPedido.value.fecha,
+    cliente: formularioPedido.value.cliente.trim(),
+    telefono: formularioPedido.value.telefono.trim(),
+    direccion: formularioPedido.value.direccion.trim(),
+    ciudad: formularioPedido.value.ciudad.trim(),
+    metodoPago: formularioPedido.value.metodoPago,
+    notas: formularioPedido.value.notas.trim(),
+    items: JSON.parse(JSON.stringify(carrito.value)),
+    total: obtenerTotalCarrito(),
+    estado: 'Recibido',
+    calificacion: 0,
+    comentarioCalificacion: '',
+    calificacionGuardada: false
+  }
+
+  // Guardar en pedidos (persiste en useLocalStorage)
+  pedidos.value.unshift(nuevaOrden)
+
+  // Limpiar carrito
+  carrito.value = []
+
+  // Cerrar drawer y redirigir a mis pedidos
+  drawerCarrito.value = false
+  cambiarSeccion('pedidos')
+
+  // Notificar
+  $q.notify({
+    type: 'positive',
+    message: `¡Pedido #${nuevaOrden.id} recibido con éxito!`,
+    caption: 'Tu orden está en preparación. Puedes hacerle seguimiento en vivo aquí.',
+    icon: 'check_circle',
+    position: 'top-right',
+    timeout: 4500
+  })
+
+  // Reiniciar formulario
+  formularioPedido.value.cliente = ''
+  formularioPedido.value.telefono = ''
+  formularioPedido.value.direccion = ''
+  formularioPedido.value.ciudad = ''
+  formularioPedido.value.notas = ''
+}
+
+function getColorEstado(estado) {
+  switch (estado) {
+    case 'Recibido': return 'amber-8'
+    case 'En Preparación': return 'orange-8'
+    case 'Enviado': return 'blue-8'
+    case 'Entregado': return 'positive'
+    default: return 'grey-7'
+  }
+}
+
+function getClasePaso(estadoActual, paso) {
+  const jerarquia = ['Recibido', 'En Preparación', 'Enviado', 'Entregado']
+  const indexActual = jerarquia.indexOf(estadoActual)
+  const indexPaso = jerarquia.indexOf(paso)
+
+  if (indexPaso < indexActual) return 'completed'
+  if (indexPaso === indexActual) return 'active'
+  return 'pending'
+}
+
+function getColorLinea(estadoActual, nivel) {
+  const jerarquia = ['Recibido', 'En Preparación', 'Enviado', 'Entregado']
+  const indexActual = jerarquia.indexOf(estadoActual)
+  return indexActual >= nivel ? 'amber-8' : 'grey-4'
+}
+
+function avanzarEstadoPedido(ordenId) {
+  const orden = pedidos.value.find(o => o.id === ordenId)
+  if (!orden) return
+
+  const jerarquia = ['Recibido', 'En Preparación', 'Enviado', 'Entregado']
+  const index = jerarquia.indexOf(orden.estado)
+  if (index < jerarquia.length - 1) {
+    orden.estado = jerarquia[index + 1]
+    $q.notify({
+      type: 'info',
+      message: `El pedido #${orden.id} avanzó a etapa: ${orden.estado}`,
+      icon: 'sync',
+      position: 'top-right'
+    })
+  }
+}
+
+function guardarCalificacion(orden) {
+  if (!orden.calificacion || orden.calificacion === 0) {
+    $q.notify({
+      type: 'warning',
+      message: 'Por favor selecciona al menos una estrella para calificar.',
+      position: 'top-right'
+    })
+    return
+  }
+
+  // Bloqueo permanente de la calificación
+  orden.calificacionGuardada = true
+
+  $q.notify({
+    type: 'positive',
+    message: `¡Calificación de ${orden.calificacion} estrellas guardada exitosamente!`,
+    caption: 'Tu evaluación ha sido registrada y no podrá ser modificada.',
+    icon: 'lock',
+    position: 'top-right',
+    timeout: 3500
+  })
 }
 </script>
-
-<style scoped>
-.logo-circle {
-  width: 40px;
-  height: 40px;
-  background-color: var(--primary-red);
-  border-radius: 50%;
-}
-
-.hero-section {
-  background: radial-gradient(circle at 80% 50%, #FFF5F5 0%, #FAFAFA 70%);
-  border-bottom: 1px solid #EEEEEE;
-}
-
-.hero-container {
-  max-width: 1240px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: clamp(2.8rem, 6vw, 4.5rem);
-  line-height: 0.95;
-  letter-spacing: 0.5px;
-}
-
-.hero-image-wrapper {
-  position: relative;
-  max-width: 480px;
-  width: 100%;
-}
-
-.hero-burger-img {
-  width: 100%;
-  height: auto;
-  border-radius: 24px;
-  box-shadow: 0 16px 40px rgba(178, 30, 39, 0.15);
-  object-fit: cover;
-}
-
-.fresh-badge {
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  width: 85px;
-  height: 85px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px dashed var(--primary-red);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  z-index: 2;
-  text-align: center;
-}
-
-.combo-promo-banner {
-  background: linear-gradient(135deg, #A81820 0%, #7E0E14 100%);
-  border-radius: 24px;
-  box-shadow: 0 12px 32px rgba(168, 24, 32, 0.25);
-  max-width: 1240px;
-  margin: 0 auto;
-}
-
-.combo-image {
-  max-width: 280px;
-  width: 100%;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-}
-
-.discount-circle {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 3px solid #f1f1f1;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-.bb-footer {
-  background-color: #111111;
-  border-top: 4px solid var(--primary-red);
-}
-
-.footer-link {
-  color: #b0b0b0;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footer-link:hover {
-  color: #ffffff;
-  text-decoration: underline;
-}
-
-.newsletter-card {
-  border: 1px solid #333333;
-}
-</style>
